@@ -13,7 +13,7 @@ int start_connection(int port) {
   name.sin_port = htons(port);
   name.sin_addr.s_addr = htonl(INADDR_ANY);
 
-  if \(bind(my_socket, (struct sockaddr *) &name, sizeof(name)) < 0) {
+  if (bind(my_socket, (struct sockaddr *) &name, sizeof(name)) < 0) {
     printf("Error binding to socket\n");
   }
 
