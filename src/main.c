@@ -10,10 +10,6 @@ void send_header(int socket) {
 }
 
 int main(void) {
-  /*char output[10000];
-  runcommand("ls", output);
-  printf("%s\n", output);*/
-
   int client_socket;
   
   connection_socket = start_connection(3000);
@@ -47,20 +43,22 @@ int main(void) {
   return 0;
 }
 
-int runcommand(char *command, char *output){
+int run_command(char *command, char *output) {
   FILE *fp;
   char line[1024];
   output[0] = 0;
 
   fp = popen(command, "r");
+
   if (fp == NULL) {
     printf("Failed to run command\n");
     return 1;
   }
 
-  while (fgets(line, sizeof(line)-1, fp) != NULL) {
+  while (fgets(line, sizeof(line) - 1, fp) != NULL) {
     strcat(output, line);
   }
+
   pclose(fp);
 
   return 0;
