@@ -1,6 +1,6 @@
 #include "connection.h"
 
-int start_connection(int port) {
+int connection_start(int port) {
   int my_socket;
   struct sockaddr_in name;
 

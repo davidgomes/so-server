@@ -3,4 +3,4 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-int start_connection(int);
+int connection_start(int port);
