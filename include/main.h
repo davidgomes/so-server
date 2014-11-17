@@ -8,6 +8,7 @@
 #include <signal.h>
 
 #include "connection.h"
+#include "utils.h"
 
 #define SERVER_STRING   "Server: simpleserver/0.1.0\r\n"
 #define HEADER_1        "HTTP/1.0 200 OK\r\n"
@@ -21,5 +22,4 @@ int connection_socket;
 struct sockaddr_in client_name;
 socklen_t client_name_len;
 char buf[SIZE_BUF];
-
 int client_socket;

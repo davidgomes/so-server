@@ -3,46 +3,12 @@
 void send_header(int socket) {
   sprintf(buf,HEADER_1);
   send(socket,buf,strlen(HEADER_1),0);
+
   sprintf(buf,SERVER_STRING);
   send(socket,buf,strlen(SERVER_STRING),0);
+
   sprintf(buf,HEADER_2);
   send(socket,buf,strlen(HEADER_2),0);
-}
-
-int read_line(int socket,int n)
-{
-  int n_read;
-  int not_eol;
-  int ret;
-  char new_char;
-
-  n_read=0;
-  not_eol=1;
-
-  while (n_read<n && not_eol) {
-    ret = read(socket,&new_char,sizeof(char));
-    if (ret == -1) {
-      printf("Error reading from socket (read_line)");
-      return -1;
-    }
-    else if (ret == 0) {
-      return 0;
-    }
-    else if (new_char=='\r') {
-      not_eol = 0;
-      // consumes next byte on buffer (LF)
-      read(socket,&new_char,sizeof(char));
-      continue;
-    }
-    else {
-      buf[n_read]=new_char;
-      n_read++;
-    }
-  }
-
-  buf[n_read]='\0';
-
-  return n_read;
 }
 
 void cleanup() {
@@ -72,9 +38,9 @@ int main(void) {
     int found_get;
     char req_buf[SIZE_BUF];
 
-    found_get=0;
-    while ( read_line(client_socket,SIZE_BUF) > 0 ) {
-      if(!strncmp(buf,GET_EXPR,strlen(GET_EXPR))) {
+    found_get = 0;
+    while (utils_socket_read_line(client_socket,SIZE_BUF) > 0 ) {
+      if (!strncmp(buf,GET_EXPR,strlen(GET_EXPR))) {
         // GET received, extract the requested page/script
         found_get=1;
         i=strlen(GET_EXPR);
