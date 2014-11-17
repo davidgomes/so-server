@@ -1,5 +1,27 @@
 #include "utils.h"
 
+int utils_found_get(int socket) {
+  char req_buf[SIZE_BUF];
+  int result = 0;
+  int i, j;
+
+  while (utils_socket_read_line(socket, SIZE_BUF) > 0) {
+    if (!strncmp(buf, GET_EXPR, strlen(GET_EXPR))) {
+      result = 1;
+      i = strlen(GET_EXPR);
+      j = 0;
+
+      while (buf[i] != ' ' && buf[i] != '\0') {
+        req_buf[j++] = buf[i++];
+      }
+
+      req_buf[j] = '\0';
+    }
+  }
+
+  return result; // 1 if found_get
+}
+
 int utils_socket_read_line(int socket, int n) {
   int n_read;
   int not_eol;
@@ -20,7 +42,7 @@ int utils_socket_read_line(int socket, int n) {
     } else if (new_char == '\r') {
       not_eol = 0;
       // consumes next byte on buffer (LF)
-      read(socket,&new_char,sizeof(char));
+      read(socket, &new_char, sizeof(char));
       continue;
     } else {
       buf[n_read] = new_char;

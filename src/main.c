@@ -34,22 +34,7 @@ int main(void) {
     /* Send index.html */
     send_header(client_socket);
 
-    int i,j;
-    int found_get;
-    char req_buf[SIZE_BUF];
-
-    found_get = 0;
-    while (utils_socket_read_line(client_socket,SIZE_BUF) > 0 ) {
-      if (!strncmp(buf,GET_EXPR,strlen(GET_EXPR))) {
-        // GET received, extract the requested page/script
-        found_get=1;
-        i=strlen(GET_EXPR);
-        j=0;
-        while( (buf[i]!=' ') && (buf[i]!='\0') )
-          req_buf[j++]=buf[i++];
-        req_buf[j]='\0';
-      }
-    }
+    int found_get = utils_found_get(client_socket);
 
     if (found_get) {
       FILE *fp;

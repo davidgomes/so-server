@@ -13,8 +13,6 @@
 #define SERVER_STRING   "Server: simpleserver/0.1.0\r\n"
 #define HEADER_1        "HTTP/1.0 200 OK\r\n"
 #define HEADER_2        "Content-Type: text/html\r\n\r\n"
-#define SIZE_BUF 1024
-#define GET_EXPR "GET /"
 
 void send_header(int socket);
 
