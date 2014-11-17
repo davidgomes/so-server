@@ -3,6 +3,9 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/socket.h>
+#include <sys/ioctl.h>
+#include <errno.h>
+#include <signal.h>
 
 #include "connection.h"
 
@@ -10,6 +13,7 @@
 #define HEADER_1        "HTTP/1.0 200 OK\r\n"
 #define HEADER_2        "Content-Type: text/html\r\n\r\n"
 #define SIZE_BUF 1024
+#define GET_EXPR "GET /"
 
 void send_header(int socket);
 
@@ -17,3 +21,5 @@ int connection_socket;
 struct sockaddr_in client_name;
 socklen_t client_name_len;
 char buf[SIZE_BUF];
+
+int client_socket;

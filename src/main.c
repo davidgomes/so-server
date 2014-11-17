@@ -9,12 +9,54 @@ void send_header(int socket) {
   send(socket,buf,strlen(HEADER_2),0);
 }
 
+int read_line(int socket,int n)
+{
+  int n_read;
+  int not_eol;
+  int ret;
+  char new_char;
+
+  n_read=0;
+  not_eol=1;
+
+  while (n_read<n && not_eol) {
+    ret = read(socket,&new_char,sizeof(char));
+    if (ret == -1) {
+      printf("Error reading from socket (read_line)");
+      return -1;
+    }
+    else if (ret == 0) {
+      return 0;
+    }
+    else if (new_char=='\r') {
+      not_eol = 0;
+      // consumes next byte on buffer (LF)
+      read(socket,&new_char,sizeof(char));
+      continue;
+    }
+    else {
+      buf[n_read]=new_char;
+      n_read++;
+    }
+  }
+
+  buf[n_read]='\0';
+
+  return n_read;
+}
+
+void cleanup() {
+  printf("Cleaning up.\n");
+  close(connection_socket);
+  close(client_socket);
+  exit(0);
+}
+
 int main(void) {
-  int client_socket;
-  
   connection_socket = start_connection(3000);
   client_name_len = sizeof(client_name);
-  
+
+  signal(SIGINT, cleanup);
   while (1) {
     if ((client_socket = accept(connection_socket,
                                 (struct sockaddr *) &client_name,
@@ -26,19 +68,40 @@ int main(void) {
     /* Send index.html */
     send_header(client_socket);
 
-    FILE *fp;
+    int i,j;
+    int found_get;
+    char req_buf[SIZE_BUF];
 
-    fp = fopen("../data/index.html", "r");
-
-    char buf_tmp[SIZE_BUF];
-    while (fgets(buf_tmp, SIZE_BUF, fp)) {
-      send(client_socket, buf_tmp, strlen(buf_tmp), 0);
+    found_get=0;
+    while ( read_line(client_socket,SIZE_BUF) > 0 ) {
+      if(!strncmp(buf,GET_EXPR,strlen(GET_EXPR))) {
+        // GET received, extract the requested page/script
+        found_get=1;
+        i=strlen(GET_EXPR);
+        j=0;
+        while( (buf[i]!=' ') && (buf[i]!='\0') )
+          req_buf[j++]=buf[i++];
+        req_buf[j]='\0';
+      }
     }
 
-    fclose(fp);
+    if (found_get) {
+      FILE *fp;
 
-    close(client_socket);
+      fp = fopen("../data/index.html", "r");
+
+      char buf_tmp[SIZE_BUF];
+      while (fgets(buf_tmp, SIZE_BUF, fp)) {
+        send(client_socket, buf_tmp, strlen(buf_tmp), 0);
+      }
+
+      fclose(fp);
+
+      close(client_socket);
+    }
   }
+
+  cleanup();
 
   return 0;
 }
