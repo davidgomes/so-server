@@ -1,4 +1,5 @@
 #include "connection.h"
+#include <stdlib.h>
 
 int start_connection(int port) {
   int my_socket;
@@ -7,6 +8,12 @@ int start_connection(int port) {
   my_socket = socket(PF_INET, SOCK_STREAM, 0);
   if (my_socket == -1) {
     printf("Error creating socket.");
+  }
+
+  int yes=1;
+  if (setsockopt(my_socket, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) == -1) {
+    perror("setsockopt");
+    exit(1);
   }
 
   name.sin_family = AF_INET;
