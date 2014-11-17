@@ -71,24 +71,3 @@ int main(void) {
 
   return 0;
 }
-
-int run_command(char *command, char *output) {
-  FILE *fp;
-  char line[1024];
-  output[0] = 0;
-
-  fp = popen(command, "r");
-
-  if (fp == NULL) {
-    printf("Failed to run command\n");
-    return 1;
-  }
-
-  while (fgets(line, sizeof(line) - 1, fp) != NULL) {
-    strcat(output, line);
-  }
-
-  pclose(fp);
-
-  return 0;
-}
