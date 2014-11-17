@@ -9,8 +9,9 @@ int start_connection(int port) {
     printf("Error creating socket.");
   }
 
-  int yes=1;
-  if (setsockopt(my_socket, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) == -1) {
+  int optval = 1;
+  if (setsockopt(my_socket, SOL_SOCKET, SO_REUSEADDR,
+                 &optval, sizeof(optval)) == -1) {
     perror("setsockopt");
     exit(1);
   }
