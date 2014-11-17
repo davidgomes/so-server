@@ -1,5 +1,4 @@
 #include "connection.h"
-#include <stdlib.h>
 
 int start_connection(int port) {
   int my_socket;
