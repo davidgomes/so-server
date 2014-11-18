@@ -27,7 +27,10 @@ int main(void) {
 
     if (found_get) {
       pthread_t new_thread;
-      pthread_create(&new_thread, NULL, client_code, &client_socket);
+      int client_socket_copy = client_socket;
+      pthread_create(&new_thread, NULL, client_code, &client_socket_copy);
+    } else {
+      close(client_socket);
     }
   }
 

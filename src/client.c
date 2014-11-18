@@ -1,10 +1,10 @@
 #include "client.h"
 
 void *client_code(void *socket) {
+  printf("A new thread has been created.\n");
+
   int client_socket = *((int*) socket);
 
-  printf("Hi\n");
-  
   FILE *fp;
 
   fp = fopen("../data/index.html", "r");
@@ -15,10 +15,8 @@ void *client_code(void *socket) {
   }
 
   fclose(fp);
-
   close(client_socket);
 
   pthread_exit(NULL);
-
   return NULL;
 }
