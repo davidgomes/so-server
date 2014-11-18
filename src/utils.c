@@ -35,7 +35,7 @@ int utils_socket_read_line(int socket, int n) {
     ret = read(socket, &new_char, sizeof(char));
 
     if (ret == -1) {
-      printf("Error reading from socket (read_line)");
+      printf("Error reading from socket (read_line): %s\n", strerror(errno));
       return -1;
     } else if (ret == 0) {
       return 0;
