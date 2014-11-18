@@ -21,8 +21,6 @@ int main(void) {
       exit(1);
     }
 
-    http_send_header(client_socket);
-
     int found_get = utils_found_get(client_socket);
 
     if (found_get) {

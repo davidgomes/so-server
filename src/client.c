@@ -5,6 +5,8 @@ void *client_code(void *socket) {
 
   int client_socket = *((int*) socket);
 
+  http_send_header(client_socket);
+  
   FILE *fp;
 
   fp = fopen("../data/index.html", "r");
