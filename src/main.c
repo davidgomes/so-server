@@ -12,6 +12,7 @@ int main(void) {
   client_name_len = sizeof(client_name);
 
   signal(SIGINT, cleanup);
+
   while (1) {
     if ((client_socket = accept(connection_socket,
                                 (struct sockaddr *) &client_name,
@@ -25,18 +26,8 @@ int main(void) {
     int found_get = utils_found_get(client_socket);
 
     if (found_get) {
-      FILE *fp;
-
-      fp = fopen("../data/index.html", "r");
-
-      char buf_tmp[SIZE_BUF];
-      while (fgets(buf_tmp, SIZE_BUF, fp)) {
-        send(client_socket, buf_tmp, strlen(buf_tmp), 0);
-      }
-
-      fclose(fp);
-
-      close(client_socket);
+      pthread_t new_thread;
+      pthread_create(&new_thread, NULL, client_code, &client_socket);
     }
   }
 

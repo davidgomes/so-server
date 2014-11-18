@@ -11,6 +11,7 @@
 #include "utils.h"
 #include "http.h"
 #include "constants.h"
+#include "client.h"
 
 int connection_socket;
 struct sockaddr_in client_name;
