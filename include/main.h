@@ -8,7 +8,6 @@
 
 #include "connection.h"
 #include "utils.h"
-#include "http.h"
 #include "constants.h"
 #include "client.h"
 
