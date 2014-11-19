@@ -3,7 +3,7 @@
 void *client_code(void *socket) {
   http_request *request = ((http_request*) socket);
 
-  http_send_header(request->socket);
+  http_send_header(request->socket, "text/html");
 
   FILE *fp;
 

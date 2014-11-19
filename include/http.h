@@ -9,7 +9,6 @@
 #include "utils.h"
 #include "constants.h"
 
-#define SERVER_STRING "Server: simpleserver/0.1.0\r\n"
 #define HEADER_1 "HTTP/1.0 200 OK\r\n"
 #define HEADER_2 "Content-Type: text/html\r\n\r\n"
 
@@ -20,6 +19,6 @@ typedef struct http_request {
 } http_request;
 
 void http_parse_request(int socket, http_request *request);
-void http_send_header(int socket);
+void http_send_header(int socket, char content_type[]);
 
 #endif

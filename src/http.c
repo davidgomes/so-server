@@ -27,15 +27,15 @@ void http_parse_request(int socket, http_request *request) {
   request->found_get = found_get;
 }
 
-void http_send_header(int socket) {
+void http_send_header(int socket, char content_type[]) {
   char buf[SIZE_BUF];
   
-  sprintf(buf,HEADER_1);
-  send(socket,buf,strlen(HEADER_1),0);
+  sprintf(buf, HEADER_1);
+  send(socket, buf, strlen(HEADER_1),0);
 
-  sprintf(buf,SERVER_STRING);
-  send(socket,buf,strlen(SERVER_STRING),0);
+  sprintf(buf, SERVER_STRING);
+  send(socket, buf, strlen(SERVER_STRING),0);
 
-  sprintf(buf,HEADER_2);
-  send(socket,buf,strlen(HEADER_2),0);
+  sprintf(buf, "Content-Type: %s\r\n\r\n", content_type);
+  send(socket, buf, strlen(HEADER_2), 0);
 }
