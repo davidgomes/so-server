@@ -1,3 +1,6 @@
+#ifndef MAIN_HEADER
+#define MAIN_HEADER
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -7,7 +10,7 @@
 #include <signal.h>
 
 #include "connection.h"
-#include "utils.h"
+#include "http.h"
 #include "constants.h"
 #include "client.h"
 
@@ -16,3 +19,5 @@ struct sockaddr_in client_name;
 socklen_t client_name_len;
 char buf[SIZE_BUF];
 int client_socket;
+
+#endif

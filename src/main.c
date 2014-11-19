@@ -21,12 +21,12 @@ int main(void) {
       exit(1);
     }
 
-    int found_get = utils_found_get(client_socket);
+    http_request *request = (http_request*) malloc(sizeof(http_request));
+    http_parse_request(client_socket, request);
 
-    if (found_get) {
+    if (request->found_get) {
       pthread_t new_thread;
-      int client_socket_copy = client_socket;
-      pthread_create(&new_thread, NULL, client_code, &client_socket_copy);
+      pthread_create(&new_thread, NULL, client_code, request);
     } else {
       close(client_socket);
     }
