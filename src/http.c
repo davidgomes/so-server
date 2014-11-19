@@ -1,9 +1,9 @@
 #include "http.h"
 
 /**
- * Parses a given HTTP request. If it is a GET, then
+ * Parses a given HTTP request from 'socket'. If it is a GET, then
  * set request->found_get accordingly. Also, set request->name
- * to the name of the file wanted.
+ * to the name of the file requested.
  */
 void http_parse_request(int socket, http_request *request) {
   int found_get = 0;
