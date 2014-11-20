@@ -16,6 +16,7 @@ typedef struct http_request {
   int found_get;
   int socket;
   char name[SIZE_BUF];
+  int is_static;
 } http_request;
 
 void http_parse_request(int socket, http_request *request);
