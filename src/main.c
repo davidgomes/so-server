@@ -10,9 +10,13 @@ void cleanup() {
 
 int main(void) {
   request_buffer = buffer_create(20); // replace 20 with 2 * NUM_THREADS
-  sem_init(&sem_buffer_full, 0, 20);
-  sem_init(&sem_buffer_empty, 0, 0);
-  sem_init(&sem_threads, 0, 10); //replace 10 with NUM_THREADS
+  sem_unlink("buffer_full");
+  sem_buffer_full = sem_open("buffer_full",O_CREAT|O_EXCL,0700, 20);
+  sem_unlink("buffer_empty");
+  sem_buffer_full = sem_open("buffer_empty",O_CREAT|O_EXCL,0700, 0);
+  sem_unlink("threads");
+  sem_buffer_full = sem_open("threads",O_CREAT|O_EXCL,0700, 10);
+
   scheduler.buffer = request_buffer;
   scheduler.sem_buffer_empty = sem_buffer_empty;
   scheduler.sem_buffer_full = sem_buffer_full;
