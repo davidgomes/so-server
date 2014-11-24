@@ -22,7 +22,11 @@ socklen_t client_name_len;
 char buf[SIZE_BUF];
 int client_socket;
 buffer* request_buffer;
-scheduler_data scheduler;
-sem_t sem_buffer_empty, sem_buffer_full, sem_threads;
+scheduler_data* scheduler_args;
+pthread_t scheduler_thread;
+
+sem_t sem_buffer_empty; // 0 is buffer is empty
+sem_t sem_buffer_full; // 0 is buffer is full
+sem_t sem_threads; // 0 is there is no available thread
 
 #endif

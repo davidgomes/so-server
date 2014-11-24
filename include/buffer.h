@@ -17,6 +17,7 @@ struct{
 	int size, cur_size;
 }typedef buffer;
 
-void create_buffer(int size);
+buffer* buffer_create(int size);
+void buffer_add(buffer* buf, http_request* hr);
 
 #endif

@@ -10,6 +10,7 @@ void http_parse_request(int socket, http_request *request) {
   int i, j;
 
   while (utils_socket_read_line(socket, SIZE_BUF) > 0) {
+    printf("%s\n", buf);
     if (!strncmp(buf, GET_EXPR, strlen(GET_EXPR))) {
       found_get = 1;
       i = strlen(GET_EXPR);

@@ -1,13 +1,18 @@
 #include "scheduler_thread.h"
 
-void scheduler_code(void* data){
+void* scheduler_code(void* data){
+    printf("scheduler_thread running\n");
+
     scheduler_data* param = (scheduler_data*) data;
     buffer* buf = param->buffer;
-    sem_t sem_buffer_full = param->sem_buffer_full, sem_buffer_empty = param->sem_buffer_empty, sem_threads = param->sem_threads;
+    sem_t sem_buffer_full = *(param->sem_buffer_full), sem_buffer_empty = *(param->sem_buffer_empty), sem_threads = *(param->sem_threads);
     int policy = param->policy;
 
     while(1){
-        sem_wait(&sem_buffer_empty);
+        sem_wait(&sem_buffer_empty); // only remove if buffer is not empty
+        printf("OK\n");
+        
+        printf("New Request\n");
         buffer_node* node = buf->first->next;
         buffer_node* parent = buf->first;
         buffer_node* best = NULL;
@@ -25,12 +30,15 @@ void scheduler_code(void* data){
             }
             
         }
-        parent->next = node->next;
-        sem_post(&sem_buffer_empty);
+        
 
-        sem_wait(&sem_threads);
+        //parent->next = node->next;
+        sem_post(&sem_buffer_full); // removed request, needs to decrement sem_buffer_full
+
+        //sem_wait(&sem_threads);
         // we could use pipes to send work to each thread
         sem_post(&sem_threads);
+
 
     }
 }
