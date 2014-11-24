@@ -13,7 +13,7 @@
 
 struct{
 	buffer* buffer;
-	sem_t sem_buffer_full, sem_buffer_empty, sem_threads;
+	sem_t *sem_buffer_full, *sem_buffer_empty, *sem_threads;
 	int policy;
 }typedef scheduler_data;
 

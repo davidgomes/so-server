@@ -7,7 +7,15 @@
 #include <unistd.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
+#include <sys/wait.h>
+#include <sys/shm.h>
+#include <sys/types.h>
 #include <signal.h>
+#include <semaphore.h>
+#include <pthread.h>
+
+#include <sys/stat.h>
+#include <fcntl.h>
 
 #include "connection.h"
 #include "http.h"
@@ -23,6 +31,6 @@ char buf[SIZE_BUF];
 int client_socket;
 buffer* request_buffer;
 scheduler_data scheduler;
-sem_t sem_buffer_empty, sem_buffer_full, sem_threads;
+sem_t *sem_buffer_empty, *sem_buffer_full, *sem_threads;
 
 #endif
