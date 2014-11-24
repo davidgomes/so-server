@@ -35,11 +35,12 @@ int main(void) {
     http_request *request = (http_request*) malloc(sizeof(http_request));
     http_parse_request(client_socket, request);
 
+    buffer_add(request_buffer, request);
+    
     if (request->found_get) {
       pthread_t new_thread;
       pthread_create(&new_thread, NULL, client_code, request);
 
-      buffer_add(request_buffer, request);
     } else {
       close(client_socket);
     }

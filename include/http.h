@@ -11,12 +11,14 @@
 
 #define HEADER_1 "HTTP/1.0 200 OK\r\n"
 #define HEADER_2 "Content-Type: text/html\r\n\r\n"
+#define STATIC_REQUEST 1
+#define DYNAMIC_REQUEST 2
 
 typedef struct http_request {
   int found_get;
   int socket;
   char name[SIZE_BUF];
-  int is_static;
+  int type;
 } http_request;
 
 void http_parse_request(int socket, http_request *request);
