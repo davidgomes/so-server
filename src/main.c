@@ -7,8 +7,7 @@ void cleanup() {
   exit(0);
 }
 
-
-int main(void) {
+void init() {
   request_buffer = buffer_create(20); // replace 20 with 2 * NUM_THREADS
   sem_unlink("buffer_full");
   sem_buffer_full = sem_open("buffer_full",O_CREAT|O_EXCL,0700, 20);
@@ -27,8 +26,12 @@ int main(void) {
   client_name_len = sizeof(client_name);
 
   signal(SIGINT, cleanup);
+}
 
-  while (1) {
+int main(void) {
+  init();
+  
+  while (true) {
     if ((client_socket = accept(connection_socket,
                                 (struct sockaddr *) &client_name,
                                 &client_name_len)) == -1 ) {
