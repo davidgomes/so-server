@@ -23,7 +23,6 @@
 #include "client.h"
 #include "buffer.h"
 #include "scheduler_thread.h"
-#include "worker.h"
 
 int connection_socket;
 struct sockaddr_in client_name;
