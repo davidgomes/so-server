@@ -26,6 +26,14 @@ void init() {
   client_name_len = sizeof(client_name);
 
   signal(SIGINT, cleanup);
+
+  pid_t config_process = fork();
+
+  if (config_process == -1) {
+    fprintf(stderr, "Fork error.\n");
+  } else if (config_process == 0) {
+    config_start();
+  }
 }
 
 int main(void) {
