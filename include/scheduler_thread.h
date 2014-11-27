@@ -15,6 +15,12 @@ struct{
 	buffer* buffer;
 	sem_t *sem_buffer_full, *sem_buffer_empty, *sem_threads;
 	int policy;
+  int* thread_ready;
+  http_request requests[10];
+  pthread_mutex_t *thread_locks;
+  pthread_cond_t* wait_for_work;
+  pthread_mutex_t* cond_lock;
+
 }typedef scheduler_data;
 
 void* scheduler_code(void* data);
