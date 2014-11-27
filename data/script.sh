@@ -1,3 +1,2 @@
 pwd
-ls
-echo Hi
+cat ../src/main.c
