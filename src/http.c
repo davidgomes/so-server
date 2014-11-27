@@ -23,13 +23,24 @@ void http_parse_request(int socket, http_request *request) {
     }
   }
 
+  if (!strlen(request->name)) {
+    strcpy(request->name, "index.html");
+  }
+
   request->socket = socket;
   request->found_get = found_get;
+
+  char *file_extension = utils_get_file_extension(request->name);
+  if (strcmp(file_extension, "sh") == 0) {
+    request->type = DYNAMIC_SCRIPT;
+  } else if (strcmp(file_extension, "html") == 0) {
+    request->type = STATIC_PAGE;
+  }
 }
 
 void http_send_header(int socket, char content_type[]) {
   char buf[SIZE_BUF];
-  
+
   sprintf(buf, HEADER_1);
   send(socket, buf, strlen(HEADER_1),0);
 

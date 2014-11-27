@@ -32,3 +32,13 @@ int utils_socket_read_line(int socket, int n) {
 
   return n_read;
 }
+
+char *utils_get_file_extension(char file_name[]) {
+  char *dot = strchr(file_name, '.');
+
+  if (!dot || dot == file_name) {
+    return NULL;
+  }
+
+  return dot + 1;
+}
