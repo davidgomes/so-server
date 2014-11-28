@@ -19,7 +19,7 @@ void* scheduler_code(void* data){
       best = node;
     }else{
       for(; node->next != NULL; node = node->next, parent=parent->next){
-        if((param->policy == STATIC_POLICY && node->request->type == STATIC_REQUEST) || (param->policy == DYNAMIC_POLICY && !node->request->type == DYNAMIC_REQUEST)){
+        if((param->policy == STATIC_POLICY && node->request->type == STATIC_PAGE) || (param->policy == DYNAMIC_POLICY && !node->request->type == DYNAMIC_SCRIPT)){
           best = node;
           break;
         }else{
@@ -53,4 +53,6 @@ void* scheduler_code(void* data){
     }
     printf("Delivered work to worker %d\n\n", i);
 
-  }  
+  }
+
+}  

@@ -78,7 +78,6 @@ void init(){
 
 int main(void) {
   init();
-  printf("All threads started\n");
 
   pid_t config_process = fork();
 
@@ -87,10 +86,6 @@ int main(void) {
   } else if (config_process == 0) {
     config_start();
   }
-}
-
-int main(void) {
-  init();
   
   while (true) {
     if ((client_socket = accept(connection_socket,

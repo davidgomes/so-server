@@ -48,10 +48,7 @@ void client_serve_request(http_request* request){
 
   if (fp == NULL) {
     printf("File doesn't exist.\n");
-
     close(request->socket);
-    pthread_exit(NULL);
-    return NULL;
   }
 
   /*
