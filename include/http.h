@@ -11,8 +11,9 @@
 
 #define HEADER_1 "HTTP/1.0 200 OK\r\n"
 #define HEADER_2 "Content-Type: text/html\r\n\r\n"
-#define STATIC_REQUEST 1
-#define DYNAMIC_REQUEST 2
+
+#define STATIC_PAGE 1
+#define DYNAMIC_SCRIPT 2
 
 typedef struct http_request {
   int found_get;

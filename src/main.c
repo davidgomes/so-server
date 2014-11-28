@@ -80,7 +80,19 @@ int main(void) {
   init();
   printf("All threads started\n");
 
-  while (1) {
+  pid_t config_process = fork();
+
+  if (config_process == -1) {
+    fprintf(stderr, "Fork error.\n");
+  } else if (config_process == 0) {
+    config_start();
+  }
+}
+
+int main(void) {
+  init();
+  
+  while (true) {
     if ((client_socket = accept(connection_socket,
                                 (struct sockaddr *) &client_name,
                                 &client_name_len)) == -1 ) {

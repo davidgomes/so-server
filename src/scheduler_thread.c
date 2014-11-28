@@ -53,13 +53,4 @@ void* scheduler_code(void* data){
     }
     printf("Delivered work to worker %d\n\n", i);
 
-
-    //sem_post(sem_buffer_empty);
-    
-    // we could use pipes to send work to each thread
-    //sem_wait(sem_threads);
-    //sem_post(sem_buffer_full);
-
   }  
-
-}
