@@ -50,6 +50,7 @@ void init_scheduler(){
   scheduler_args->thread_ready = thread_ready;
   scheduler_args->thread_locks = thread_locks;
   scheduler_args->wait_for_work = wait_for_work;
+  scheduler_args->requests = requests;
 
 }
 

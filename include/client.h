@@ -13,16 +13,17 @@
 #include "http.h"
 #include "constants.h"
 
-void *client_code(void *which_client);
-
 struct{
 	int id;
 	pthread_mutex_t* lock;
 	int* ready;
 	sem_t* sem_threads;
-	http_request* request;
+	http_request** request;
 	pthread_cond_t* wait_for_work;
 	pthread_mutex_t* cond_lock;
 }typedef client_data;
+
+void *client_code(void *which_client);
+void client_serve_request(http_request* request);
 
 #endif

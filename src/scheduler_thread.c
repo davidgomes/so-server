@@ -9,7 +9,6 @@ void* scheduler_code(void* data){
   int policy = param->policy;
 
   while(1){
-    printf("scheduler_thread\n");
     sem_wait(sem_buffer_empty); // only remove if buffer is not empty
 
     printf("New Request\n");
@@ -31,23 +30,28 @@ void* scheduler_code(void* data){
 
     }
 
-    printf("name: %s\n", best->request->name);
+    printf("On scheduler_code: work with name: %s\n", best->request->name);
 
     parent->next = node->next;
 
     int i;
     for(i=0; i<10; i++){
       pthread_mutex_lock(&param->thread_locks[i]);
-      if(param->thread_ready[i]){
+      if(param->thread_ready[i] == 1){
+        param->requests[i] = best->request;
         param->thread_ready[i] = 0;
-        pthread_cond_broadcast(param->wait_for_work);
         pthread_mutex_unlock(&param->thread_locks[i]);
+        
+        //printf("On scheduler_code: Got request\n");
+        
+        pthread_cond_broadcast(param->wait_for_work);
+        
         break;
       }
       pthread_mutex_unlock(&param->thread_locks[i]);
       
     }
-    printf("Delivered work\n");
+    printf("Delivered work to worker %d\n\n", i);
 
 
     //sem_post(sem_buffer_empty);
