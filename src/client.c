@@ -6,7 +6,7 @@ void *client_code(void* cd) {
 
   printf("Thread %d started.\n", data->id);
 
-  while(1){
+  while(1) {
     pthread_cond_wait(data->wait_for_work, data->cond_lock);
     printf("On client_code %d: Received work\n", data->id);
 
@@ -27,7 +27,7 @@ void *client_code(void* cd) {
 
 }
 
-void client_serve_request(http_request* request){
+void client_serve_request(http_request* request) {
 
   http_send_header(request->socket, "text/html");
 

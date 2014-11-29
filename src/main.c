@@ -8,13 +8,13 @@ void cleanup() {
   exit(0);
 }
 
-void init_clients(){
+void init_clients() {
   int i;
 
   //pthread_mutex_lock(&myMutex);
   //pthread_mutex_unlock(&myMutex);
 
-  for(i=0; i<10; i++){
+  for(i=0; i<10; i++) {
     pthread_mutex_init(&thread_locks[i], NULL);
     pthread_mutex_init(&cond_lock[i], NULL);
     pthread_cond_init(&wait_for_work[i], NULL);
@@ -31,7 +31,7 @@ void init_clients(){
   //sleep(1);
 }
 
-void init_semaphores(){
+void init_semaphores() {
   sem_unlink("buffer_full");
   sem_buffer_full = sem_open("buffer_full",O_CREAT|O_EXCL,0700, 20);
   sem_unlink("buffer_empty");
@@ -40,7 +40,7 @@ void init_semaphores(){
   sem_threads = sem_open("threads",O_CREAT|O_EXCL,0700, 10);
 }
 
-void init_scheduler(){
+void init_scheduler() {
   scheduler_args = (scheduler_data*)malloc(sizeof(scheduler_data));
   scheduler_args->buffer = request_buffer;
   scheduler_args->sem_buffer_empty = sem_buffer_empty;
@@ -54,7 +54,7 @@ void init_scheduler(){
 
 }
 
-void init(){
+void init() {
   int i;
 
   request_buffer = buffer_create(20); // replace 20 with 2 * NUM_THREADS
@@ -69,7 +69,7 @@ void init(){
 
   pthread_create(&scheduler_thread, NULL, scheduler_code, scheduler_args);
 
-  for(i=0; i<10; i++){
+  for(i=0; i<10; i++) {
     pthread_create(&client_threads[i], NULL, client_code, &(workers[i]));
   }
 
