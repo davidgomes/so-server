@@ -44,7 +44,7 @@ void* scheduler_code(void* data){
         
         //printf("On scheduler_code: Got request\n");
         
-        pthread_cond_broadcast(param->wait_for_work);
+        pthread_cond_broadcast( &(param->wait_for_work[i]) );
         
         break;
       }

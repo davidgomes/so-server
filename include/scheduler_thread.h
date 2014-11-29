@@ -17,7 +17,7 @@ struct{
 	int policy;
   int* thread_ready;
   http_request** requests;
-  pthread_mutex_t *thread_locks;
+  pthread_mutex_t* thread_locks;
   pthread_cond_t* wait_for_work;
   pthread_mutex_t* cond_lock;
 
