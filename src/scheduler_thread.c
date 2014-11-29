@@ -5,10 +5,7 @@ void* scheduler_code(void* data) {
 
   scheduler_data* param = (scheduler_data*) data;
   buffer* buf = param->buffer;
-  sem_t *sem_buffer_full = param->sem_buffer_full;
   sem_t *sem_buffer_empty = param->sem_buffer_empty;
-  sem_t *sem_threads = param->sem_threads;
-  int policy = param->policy;
 
   while (true) {
     sem_wait(sem_buffer_empty); // only remove if buffer is not empty

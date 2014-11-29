@@ -1,7 +1,6 @@
 #include "client.h"
 
 void *client_code(void* cd) {
-
   client_data* data = (client_data*) cd;
 
   printf("Thread %d started.\n", data->id);
@@ -29,7 +28,7 @@ void *client_code(void* cd) {
 void client_serve_request(http_request* request) {
   FILE *fp;
 
-  if (strcmp(request->name, "favicon.ico") == 0) {
+  if (request->type == SOMETHING_ELSE) {
     return;
   }
 

@@ -35,6 +35,8 @@ void http_parse_request(int socket, http_request *request) {
     request->type = DYNAMIC_SCRIPT;
   } else if (strcmp(file_extension, "html") == 0) {
     request->type = STATIC_PAGE;
+  } else {
+    request->type = SOMETHING_ELSE; // things such as favicon.ico's
   }
 }
 

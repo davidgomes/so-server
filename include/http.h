@@ -14,6 +14,7 @@
 
 #define STATIC_PAGE 1
 #define DYNAMIC_SCRIPT 2
+#define SOMETHING_ELSE 3
 
 typedef struct http_request {
   int found_get;
