@@ -12,9 +12,9 @@
 #define DYNAMIC_POLICY 2
 
 struct{
-	buffer* buffer;
-	sem_t *sem_buffer_full, *sem_buffer_empty, *sem_threads;
-	int policy;
+  buffer* buffer;
+  sem_t *sem_buffer_full, *sem_buffer_empty, *sem_threads;
+  int policy;
   int* thread_ready;
   http_request** requests;
   pthread_mutex_t* thread_locks;

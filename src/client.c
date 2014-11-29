@@ -12,7 +12,6 @@ void *client_code(void* cd) {
 
     sem_wait(data->sem_threads);
     
-    //printf("On client: Request Name: %s\n", (*(data->request))->name);
     client_serve_request(*(data->request) );
     sleep(10);
     
