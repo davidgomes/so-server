@@ -28,17 +28,17 @@ void init_clients() {
 
 void init_semaphores() {
   sem_unlink("buffer_full");
-  sem_buffer_full = sem_open("buffer_full",O_CREAT|O_EXCL,0700, 20);
+  sem_buffer_full = sem_open("buffer_full", O_CREAT|O_EXCL, 0700, 20);
 
   sem_unlink("buffer_empty");
-  sem_buffer_empty = sem_open("buffer_empty",O_CREAT|O_EXCL,0700, 0);
+  sem_buffer_empty = sem_open("buffer_empty", O_CREAT | O_EXCL, 0700, 0);
 
   sem_unlink("threads");
-  sem_threads = sem_open("threads",O_CREAT|O_EXCL,0700, 10);
+  sem_threads = sem_open("threads", O_CREAT | O_EXCL, 0700, 10);
 }
 
 void init_scheduler() {
-  scheduler_args = (scheduler_data*)malloc(sizeof(scheduler_data));
+  scheduler_args = (scheduler_data*) malloc(sizeof(scheduler_data));
   scheduler_args->buffer = request_buffer;
   scheduler_args->sem_buffer_empty = sem_buffer_empty;
   scheduler_args->sem_buffer_full = sem_buffer_full;

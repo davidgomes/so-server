@@ -6,7 +6,7 @@ void *client_code(void* cd) {
 
   printf("Thread %d started.\n", data->id);
 
-  while(true) {
+  while (true) {
     pthread_cond_wait(data->wait_for_work, data->cond_lock);
     printf("On client_code %d: Received work.\n", data->id);
 
