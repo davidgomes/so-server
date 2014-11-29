@@ -11,13 +11,17 @@
 #define STATIC_POLICY 1
 #define DYNAMIC_POLICY 2
 
-struct scheduler_data {
+struct {
+  buffer *buffer;
   sem_t *sem_buffer_full, *sem_buffer_empty, *sem_threads;
-
-  buffer* buffer;
   int policy;
+  int *thread_ready;
+  http_request **requests;
+  pthread_mutex_t *thread_locks;
+  pthread_cond_t *wait_for_work;
+  pthread_mutex_t *cond_lock;
 } typedef scheduler_data;
 
-void scheduler_code(void *data);
+void *scheduler_code(void *data);
 
 #endif

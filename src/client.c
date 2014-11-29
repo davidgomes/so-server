@@ -1,15 +1,35 @@
 #include "client.h"
 
-void *client_code(void *socket) {
-  http_request *request = ((http_request*) socket);
+void *client_code(void* cd) {
+  client_data* data = (client_data*) cd;
 
-  http_send_header(request->socket, "text/html");
+  printf("Thread %d started.\n", data->id);
 
+  while (true) {
+    pthread_cond_wait(data->wait_for_work, data->cond_lock);
+    printf("On client_code %d: Received work.\n", data->id);
+
+    sem_wait(data->sem_threads);
+
+    client_serve_request(*(data->request));
+    sleep(10);
+
+    pthread_mutex_lock(data->lock);
+    *(data->ready) = 1;
+    pthread_mutex_unlock(data->lock);
+
+    sem_post(data->sem_threads);
+    printf("On client_code %d: Finished work.\n", data->id);
+  }
+
+  return NULL;
+}
+
+void client_serve_request(http_request* request) {
   FILE *fp;
 
-  if (strcmp(request->name, "favicon.ico") == 0) {
-    pthread_exit(NULL);
-    return NULL;
+  if (request->type == SOMETHING_ELSE) {
+    return;
   }
 
   char file_name[SIZE_BUF];
@@ -18,12 +38,15 @@ void *client_code(void *socket) {
   fp = fopen(file_name, "r");
 
   if (fp == NULL) {
-    printf("File doesn't exist.\n");
-
-    close(request->socket);
-    pthread_exit(NULL);
-    return NULL;
+    return;
   }
+
+  if (fp == NULL) {
+    printf("File doesn't exist.\n");
+    close(request->socket);
+  }
+
+  http_send_header(request->socket, "text/html");
 
   /*
    * Execute a script and get output back from a file passed with a pipe.
@@ -46,6 +69,7 @@ void *client_code(void *socket) {
     pclose(pipe_output);
   } else if (request->type == STATIC_PAGE) {
     char buf_tmp[SIZE_BUF];
+
     while (fgets(buf_tmp, SIZE_BUF, fp)) {
       send(request->socket, buf_tmp, strlen(buf_tmp), 0);
     }
@@ -53,7 +77,4 @@ void *client_code(void *socket) {
 
   fclose(fp);
   close(request->socket);
-
-  pthread_exit(NULL);
-  return NULL;
 }
