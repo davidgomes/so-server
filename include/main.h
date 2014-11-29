@@ -30,19 +30,21 @@ struct sockaddr_in client_name;
 socklen_t client_name_len;
 char buf[SIZE_BUF];
 int client_socket;
-buffer* request_buffer;
-scheduler_data* scheduler_args;
+
+buffer *request_buffer;
+scheduler_data *scheduler_args;
 pthread_t scheduler_thread;
 int thread_ready[10];
-http_request* requests[10];
+http_request *requests[10];
+
 pthread_mutex_t thread_locks[10];
 pthread_cond_t wait_for_work[10];
 pthread_mutex_t cond_lock[10];
 client_data workers[10];
 pthread_t client_threads[10];
 
-sem_t* sem_buffer_empty; // 0 is buffer is empty
-sem_t* sem_buffer_full; // 0 is buffer is full
-sem_t* sem_threads; // 0 is there is no available thread
+sem_t *sem_buffer_empty; // 0 is buffer is empty
+sem_t *sem_buffer_full; // 0 is buffer is full
+sem_t *sem_threads; // 0 is there is no available thread
 
 #endif
