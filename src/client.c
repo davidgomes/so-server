@@ -48,7 +48,7 @@ void client_serve_request(http_request* request) {
   }
 
   http_send_header(request->socket, "text/html");
-  
+
   /*
    * Execute a script and get output back from a file passed with a pipe.
    */
