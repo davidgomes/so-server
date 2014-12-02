@@ -1,15 +1,11 @@
 #include "config.h"
 
-void config_start() {
-  FILE *config_file = fopen("config.txt", "r");
+void config_start(config_t *config) {
+  FILE *config_file = fopen("../data/config.txt", "r");
 
   int n_threads;
   fscanf(config_file, "%d", &n_threads);
-
-  printf("Number of workers: %d.\n", n_threads);
-
-  // TODO Michel escrever n_threads para uma variavel no main.h
-  // com recurso a memoria partilhada
+  config->n_threads = n_threads;
   
   fclose(config_file);
 }

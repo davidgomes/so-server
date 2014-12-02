@@ -3,6 +3,10 @@
 
 #include <stdio.h>
 
-void config_start();
+struct {
+  int n_threads;
+} typedef config_t;
+
+void config_start(config_t *config);
 
 #endif
