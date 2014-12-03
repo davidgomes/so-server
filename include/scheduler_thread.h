@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <semaphore.h>
+
 #include "buffer.h"
 
 #define FIFO_POLICY 0
@@ -13,6 +14,7 @@
 
 struct {
   buffer *buffer;
+  int n_threads;
   sem_t *sem_buffer_full, *sem_buffer_empty, *sem_threads;
   int policy;
   int *thread_ready;

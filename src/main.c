@@ -34,7 +34,7 @@ void main_init_semaphores() {
   sem_buffer_empty = sem_open("buffer_empty", O_CREAT | O_EXCL, 0700, 0);
 
   sem_unlink("threads");
-  sem_threads = sem_open("threads", O_CREAT | O_EXCL, 0700, 10);
+  sem_threads = sem_open("threads", O_CREAT | O_EXCL, 0700, config->n_threads);
 }
 
 void main_init_scheduler() {
@@ -45,8 +45,9 @@ void main_init_scheduler() {
   cond_lock = (pthread_mutex_t*) malloc(sizeof(pthread_mutex_t) * config->n_threads);
   workers = (client_data*) malloc(sizeof(client_data) * config->n_threads);
   client_threads = (pthread_t*) malloc(sizeof(pthread_t) * config->n_threads);
-  
+
   scheduler_args = (scheduler_data*) malloc(sizeof(scheduler_data));
+  scheduler_args->n_threads = config->n_threads;
   scheduler_args->buffer = request_buffer;
   scheduler_args->sem_buffer_empty = sem_buffer_empty;
   scheduler_args->sem_buffer_full = sem_buffer_full;
@@ -83,7 +84,7 @@ void main_init() {
   main_init_config();
 
   printf("Number of threads in config: %d\n", config->n_threads);
-  
+
   request_buffer = buffer_create(config->n_threads * 2);
 
   main_init_semaphores();

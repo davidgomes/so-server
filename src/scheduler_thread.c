@@ -39,7 +39,7 @@ void* scheduler_code(void* data) {
     parent->next = node->next;
 
     int i;
-    for (i = 0; i < 10; i++) {
+    for (i = 0; i < param->n_threads; i++) {
       pthread_mutex_lock(&param->thread_locks[i]);
 
       if (param->thread_ready[i] == 1) {
