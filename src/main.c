@@ -28,7 +28,7 @@ void main_init_clients() {
 
 void main_init_semaphores() {
   sem_unlink("buffer_full");
-  sem_buffer_full = sem_open("buffer_full", O_CREAT|O_EXCL, 0700, 20);
+  sem_buffer_full = sem_open("buffer_full", O_CREAT | O_EXCL, 0700, 20);
 
   sem_unlink("buffer_empty");
   sem_buffer_empty = sem_open("buffer_empty", O_CREAT | O_EXCL, 0700, 0);
@@ -88,7 +88,7 @@ void main_init() {
 
   main_init_semaphores();
 
-  connection_socket = connection_start(3000); // FIXME config->port
+  connection_socket = connection_start(config->port);
   client_name_len = sizeof(client_name);
 
   main_init_scheduler();
