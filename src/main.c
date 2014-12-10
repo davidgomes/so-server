@@ -115,13 +115,12 @@ int main(void) {
     if ((client_socket = accept(connection_socket,
                                 (struct sockaddr *) &client_name,
                                 &client_name_len)) == -1 ) {
-      printf("Error accepting connection.\n");
-      exit(1);
+      fprintf(stderr, "Error accepting connection.\n");
+      return 1;
     }
 
     http_request *request = (http_request*) malloc(sizeof(http_request));
     http_parse_request(client_socket, request);
-
 
     sem_wait(sem_buffer_full);
     pthread_mutex_lock(buffer_mutex);
