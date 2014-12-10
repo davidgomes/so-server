@@ -59,3 +59,13 @@ void http_send_header(int socket, char content_type[]) {
   sprintf(buf, "Content-Type: %s\r\n\r\n", content_type);
   send(socket, buf, strlen(HEADER_2), 0);
 }
+
+void http_int_to_type(char *result, int type) {
+  if (type == 1) {
+    strcpy(result, "STATIC_PAGE");
+  } else if (type == 2) {
+    strcpy(result, "DYNAMIC_SCRIPT");
+  } else if (type == 3) {
+    strcpy(result, "SOMETHING_ELSE");
+  }
+}

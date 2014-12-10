@@ -18,7 +18,8 @@ void stats_start(int _message_queue_id, char log_file_name[]) {
 
     char *time_str = asctime(timeinfo);
     time_str[(int) strlen(time_str) - 1] = 0;
-    fprintf(log_file, "%s %s\n", time_str, new_message->file_name);
+    fprintf(log_file, "%s %s %s %d\n", new_message->request_type,
+            time_str, new_message->file_name, new_message->thread_index);
   }
 }
 
