@@ -30,16 +30,21 @@ void http_parse_request(int socket, http_request *request) {
   request->socket = socket;
   request->found_get = found_get;
 
-  /*char *file_extension = utils_get_file_extension(request->name);
-  if (strcmp(file_extension, "sh") == 0) {
+  char *file_extension = utils_get_file_extension(request->name);
+
+  char prefix_dir[SIZE_BUF];
+  utils_get_prefix_directory(prefix_dir, request->name);
+
+  if (strcmp(prefix_dir, SCRIPT_DIR) == 0) {
     request->type = DYNAMIC_SCRIPT;
-  } else if (strcmp(file_extension, "html") == 0) {
+    return;
+  }
+
+  if (strcmp(file_extension, "html") == 0) {
     request->type = STATIC_PAGE;
   } else {
     request->type = SOMETHING_ELSE; // things such as favicon.ico's
-  }*/ 
-
-    request->type = STATIC_PAGE;
+  }
 }
 
 void http_send_header(int socket, char content_type[]) {

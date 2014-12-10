@@ -4,6 +4,9 @@
 #define SIZE_BUF 1024
 #define SERVER_STRING "Server: so-server/0.0.1\r\n"
 
+#define SCRIPT_DIR "cgi-bin"
+#define GET_EXPR "GET /"
+
 #define true 1
 #define false 0
 

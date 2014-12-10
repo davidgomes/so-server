@@ -42,3 +42,19 @@ char *utils_get_file_extension(char file_name[]) {
 
   return dot + 1;
 }
+
+void utils_get_prefix_directory(char *result, char file_name[]) {
+  char *prefix = file_name;
+  int i = 0;
+
+  char *slash = strchr(file_name, '/');
+
+  if (!slash || slash == file_name) {
+    result = "";
+    return;
+  }
+  
+  while (*prefix != '/') {
+    result[i++] = *(prefix++);
+  }
+}

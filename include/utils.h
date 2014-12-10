@@ -8,10 +8,9 @@
 
 #include "constants.h"
 
-#define GET_EXPR "GET /"
-
 int utils_socket_read_line(int socket, int n);
 char *utils_get_file_extension(char file_name[]);
+void utils_get_prefix_directory(char *result, char file_name[]);
 
 char buf[SIZE_BUF];
 
