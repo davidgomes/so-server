@@ -2,8 +2,13 @@
 
 void main_cleanup() {
   printf("Cleaning up.\n");
+
   close(connection_socket);
   close(client_socket);
+  msgctl(message_queue_id, IPC_RMID, 0);
+
+  kill(stats_process, SIGINT);
+  
   exit(0);
 }
 
@@ -32,7 +37,7 @@ void main_init_semaphores() {
 
   sem_unlink("buffer_empty");
   sem_buffer_empty = sem_open("buffer_empty", O_CREAT | O_EXCL, 0700, 0);
-  
+
   buffer_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(buffer_mutex, NULL);
 
@@ -63,11 +68,31 @@ void main_init_scheduler() {
   scheduler_args->requests = requests;
 }
 
+void main_init_stats() {
+  stats_process = fork();
+
+  if (stats_process == -1) {
+    fprintf(stderr, "Fork error creating stats process.\n");
+  } else if (stats_process == 0) {
+    stats_start(message_queue_id, "logs.txt");
+    exit(0);
+  } else { }
+}
+
+void main_init_message_queue() {
+  message_queue_id = msgget(IPC_PRIVATE, IPC_CREAT | 0777);
+  
+  if (message_queue_id < 0) {
+    fprintf(stderr, "An error occurred creating the message queue.\n");
+    exit(1);
+  }
+}
+
 void main_init_config() {
   pid_t config_process = fork();
 
   if (config_process == -1) {
-    fprintf(stderr, "Fork error.\n");
+    fprintf(stderr, "Fork error creating config process.\n");
   } else if (config_process == 0) {
     config_start(config);
     exit(0);
@@ -83,6 +108,9 @@ void main_init_shared_memory() {
 
 void main_init() {
   int i;
+
+  main_init_message_queue();
+  main_init_stats();
 
   main_init_shared_memory();
   main_init_config();
@@ -114,7 +142,7 @@ int main(void) {
   while (true) {
     if ((client_socket = accept(connection_socket,
                                 (struct sockaddr *) &client_name,
-                                &client_name_len)) == -1 ) {
+                                &client_name_len)) == -1) {
       fprintf(stderr, "Error accepting connection.\n");
       return 1;
     }
@@ -124,7 +152,15 @@ int main(void) {
 
     sem_wait(sem_buffer_full);
     pthread_mutex_lock(buffer_mutex);
+
     buffer_add(request_buffer, request);
+
+    /* Update statistics' message queue */
+    stats_message *message = (stats_message*) malloc(sizeof(stats_message));
+    message->mtype = 1;
+    strcpy(message->file_name, request->name);
+    msgsnd(message_queue_id, message, sizeof(stats_message), 0);
+
     pthread_mutex_unlock(buffer_mutex);
     sem_post(sem_buffer_empty);
   }
