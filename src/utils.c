@@ -1,5 +1,17 @@
 #include "utils.h"
 
+/* Gets current asctime without newline */
+void utils_get_current_time(char *result) {
+  time_t rawtime;
+  struct tm * timeinfo;
+
+  time(&rawtime);
+  timeinfo = localtime(&rawtime);
+
+  strcpy(result, asctime(timeinfo));
+  result[(int) strlen(result) - 1] = 0;
+}
+
 int utils_socket_read_line(int socket, int n) {
   int n_read;
   int not_eol;

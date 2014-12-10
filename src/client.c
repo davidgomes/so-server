@@ -19,10 +19,6 @@ void *client_code(void* cd) {
     message->thread_index = data->id;
     strcpy(message->file_name, (*(data->request))->name);
 
-    //char request_type_str[24];
-    //http_int_to_type(request_type_str, (*(data->request))->type);
-    //strcpy(message->request_type, request_type_str);
-
     http_int_to_type(message->request_type, (*(data->request))->type);
     
     msgsnd((*(data->request))->message_queue_id, message,
