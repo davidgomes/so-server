@@ -28,8 +28,8 @@ void buffer_add(buffer* buf, http_request* hr) {
   while (bn->next != NULL) {
     bn = bn->next;
   }
-
   bn->next = buffer_create_node(hr);
+  buf->cur_size++;
 
   printf("Added node to buffer\n");
 }

@@ -6,10 +6,12 @@ void* scheduler_code(void* data) {
   scheduler_data* param = (scheduler_data*) data;
   buffer* buf = param->buffer;
   sem_t *sem_buffer_empty = param->sem_buffer_empty;
+  sem_t *sem_buffer_full = param->sem_buffer_full;
+  pthread_mutex_t *buffer_mutex = param->buffer_mutex;
 
   while (true) {
     sem_wait(sem_buffer_empty); // only remove if buffer is not empty
-
+    pthread_mutex_lock(buffer_mutex);
     printf("New Request.\n");
     buffer_node* node = buf->first->next;
     buffer_node* parent = buf->first;
@@ -36,7 +38,10 @@ void* scheduler_code(void* data) {
 
     printf("On scheduler_code: work with name: %s\n", best->request->name);
 
-    parent->next = node->next;
+    parent->next = best->next;
+    buf->cur_size--;
+    pthread_mutex_unlock(buffer_mutex);
+    sem_post(sem_buffer_full);
 
     int i;
     for (i = 0; i < param->n_threads; i++) {
@@ -54,7 +59,13 @@ void* scheduler_code(void* data) {
 
       pthread_mutex_unlock(&param->thread_locks[i]);
     }
-
-    printf("Delivered work to worker %d\n\n", i);
+    if(i >= 10){
+      printf("No worker available\n"); // This might happen if the workers are slow, because when the request is delivered to a worker we remove the request from the buffer, leaving space for more requests, but no thread available.
+      char error[] = "<!DOCTYPE html>\n <head></head>\n <body> <h2>Server error. No processing units available. </h2> </body>\n\n";
+      //send(best->request->socket, error, strlen(error), 0);
+      send(best->request->socket, error, strlen(error), 0);
+      close(best->request->socket);
+    }else
+      printf("Delivered work to worker %d\n\n", i);
   }
 }

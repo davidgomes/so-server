@@ -32,6 +32,9 @@ void main_init_semaphores() {
 
   sem_unlink("buffer_empty");
   sem_buffer_empty = sem_open("buffer_empty", O_CREAT | O_EXCL, 0700, 0);
+  
+  buffer_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(buffer_mutex, NULL);
 
   sem_unlink("threads");
   sem_threads = sem_open("threads", O_CREAT | O_EXCL, 0700, config->n_threads);
@@ -51,6 +54,7 @@ void main_init_scheduler() {
   scheduler_args->buffer = request_buffer;
   scheduler_args->sem_buffer_empty = sem_buffer_empty;
   scheduler_args->sem_buffer_full = sem_buffer_full;
+  scheduler_args->buffer_mutex = buffer_mutex;
   scheduler_args->sem_threads = sem_threads;
   scheduler_args->policy = FIFO_POLICY;
   scheduler_args->thread_ready = thread_ready;
@@ -118,8 +122,11 @@ int main(void) {
     http_request *request = (http_request*) malloc(sizeof(http_request));
     http_parse_request(client_socket, request);
 
+
     sem_wait(sem_buffer_full);
+    pthread_mutex_lock(buffer_mutex);
     buffer_add(request_buffer, request);
+    pthread_mutex_unlock(buffer_mutex);
     sem_post(sem_buffer_empty);
   }
 

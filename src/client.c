@@ -55,7 +55,7 @@ void client_serve_request(http_request* request) {
     FILE *pipe_output = popen(file_name, "r");
 
     char output_buffer[SIZE_BUF];
-    char style_string[] = "<body style=\"font-family: Monospace; background: #3A3A3A; color: #ffffff\">";
+    char style_string[] = "<body>";
     char style_string2[] = "</body>";
     send(request->socket, style_string, sizeof(style_string), 0);
     while (fgets(output_buffer, sizeof(output_buffer), pipe_output) != NULL) {

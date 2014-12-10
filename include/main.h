@@ -50,6 +50,7 @@ pthread_t *client_threads;
 sem_t *sem_buffer_empty; // 0 if buffer is empty
 sem_t *sem_buffer_full; // 0 if buffer is full
 sem_t *sem_threads; // 0 if there is no available thread
+pthread_mutex_t *buffer_mutex;
 
 int configuration_shmid;
 config_t *config;
