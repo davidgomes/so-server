@@ -61,6 +61,7 @@ pid_t stats_process;
 int message_queue_id;
 
 void main_cleanup();
+void main_reset();
 
 void main_init_clients();
 void main_init_semaphores();
@@ -71,6 +72,9 @@ void main_init_message_queue();
 
 void main_init_config();
 void main_init_shared_memory();
+
+void sigtstp_handle();
+void restart();
 
 void main_init();
 
