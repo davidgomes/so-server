@@ -8,7 +8,7 @@ void main_cleanup() {
   msgctl(message_queue_id, IPC_RMID, 0);
 
   kill(stats_process, SIGINT);
-  
+
   exit(0);
 }
 
@@ -38,7 +38,7 @@ void main_init_semaphores() {
   sem_unlink("buffer_empty");
   sem_buffer_empty = sem_open("buffer_empty", O_CREAT | O_EXCL, 0700, 0);
 
-  buffer_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  buffer_mutex = (pthread_mutex_t*) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(buffer_mutex, NULL);
 
   sem_unlink("threads");
@@ -81,7 +81,7 @@ void main_init_stats() {
 
 void main_init_message_queue() {
   message_queue_id = msgget(IPC_PRIVATE, IPC_CREAT | 0777);
-  
+
   if (message_queue_id < 0) {
     fprintf(stderr, "An error occurred creating the message queue.\n");
     exit(1);
@@ -136,15 +136,27 @@ void main_init() {
   signal(SIGINT, main_cleanup);
 }
 
+void sigtstp_handle() {
+  close(connection_socket);
+  close(client_socket);
+  msgctl(message_queue_id, IPC_RMID, 0);
+
+  kill(stats_process, SIGINT);
+
+  main_init();
+}
+
 int main(void) {
   main_init();
 
+  signal(SIGTSTP, sigtstp_handle);
+  
   while (true) {
     if ((client_socket = accept(connection_socket,
                                 (struct sockaddr *) &client_name,
                                 &client_name_len)) == -1) {
       fprintf(stderr, "Error accepting connection.\n");
-      return 1;
+      //return 1;
     }
 
     http_request *request = (http_request*) malloc(sizeof(http_request));
