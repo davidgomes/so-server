@@ -38,6 +38,7 @@ void main_shutdown() {
   main_shutdown_processes();
 
   close(connection_socket);
+  exit(0);
 }
 
 void main_init_clients() {
