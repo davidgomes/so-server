@@ -21,9 +21,11 @@ typedef struct http_request {
   int socket;
   char name[SIZE_BUF];
   int type;
+  long message_queue_id;
 } http_request;
 
 void http_parse_request(int socket, http_request *request);
 void http_send_header(int socket, char content_type[]);
+void http_int_to_type(char *result, int type);
 
 #endif

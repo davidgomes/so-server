@@ -149,18 +149,11 @@ int main(void) {
 
     http_request *request = (http_request*) malloc(sizeof(http_request));
     http_parse_request(client_socket, request);
+    request->message_queue_id = message_queue_id;
 
     sem_wait(sem_buffer_full);
     pthread_mutex_lock(buffer_mutex);
-
     buffer_add(request_buffer, request);
-
-    /* Update statistics' message queue */
-    stats_message *message = (stats_message*) malloc(sizeof(stats_message));
-    message->mtype = 1;
-    strcpy(message->file_name, request->name);
-    msgsnd(message_queue_id, message, sizeof(stats_message), 0);
-
     pthread_mutex_unlock(buffer_mutex);
     sem_post(sem_buffer_empty);
   }
