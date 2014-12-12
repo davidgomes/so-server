@@ -9,6 +9,8 @@
 #include <sys/shm.h>
 #include <sys/types.h>
 #include <semaphore.h>
+#include <signal.h>
+
 
 #include "http.h"
 #include "constants.h"
