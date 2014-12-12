@@ -59,7 +59,7 @@ void main_init_clients() {
 
 void main_init_semaphores() {
   sem_unlink("buffer_full");
-  sem_buffer_full = sem_open("buffer_full", O_CREAT | O_EXCL, 0700, 20);
+  sem_buffer_full = sem_open("buffer_full", O_CREAT | O_EXCL, 0700, config->n_threads*2);
 
   sem_unlink("buffer_empty");
   sem_buffer_empty = sem_open("buffer_empty", O_CREAT | O_EXCL, 0700, 0);
