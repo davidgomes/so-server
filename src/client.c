@@ -1,9 +1,8 @@
 #include "client.h"
 
-void cleanup_client(){
+void cleanup_client() {
   printf("client_cleanup\n");
   pthread_exit(0);
-
 }
 
 void *client_code(void* cd) {

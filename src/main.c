@@ -1,24 +1,25 @@
 #include "main.h"
 
-void shutdown_threads(){
+void main_shutdown_threads() {
   printf("%d\n", config->n_threads);
-  
+
   pthread_kill(scheduler_thread, SIGUSR2);
   pthread_join(scheduler_thread, NULL);
 
   int i;
-  for(i=0; i<config->n_threads; i++){
+  for (i = 0; i < config->n_threads; i++) {
     pthread_kill(client_threads[i], SIGUSR1);
     pthread_join(client_threads[i], NULL);
   }
+
   printf("Threads Killed\n");
 }
 
-void shutdown_processes(){
-  //not sure is already done
+void main_shutdown_processes() {
+  // TODO
 }
 
-void free_thread_memory(){
+void main_free_thread_memory() {
   free(thread_ready);
   free(requests);
   free(thread_locks);
@@ -27,13 +28,14 @@ void free_thread_memory(){
   free(workers);
   free(client_threads);
   free(scheduler_args);
+
   printf("Memory Released\n");
 }
 
-void main_shutdown(){
-  shutdown_threads();
-  free_thread_memory();
-  shutdown_processes();
+void main_shutdown() {
+  main_shutdown_threads();
+  main_free_thread_memory();
+  main_shutdown_processes();
 
   close(connection_socket);
 }
@@ -63,7 +65,7 @@ void main_init_semaphores() {
 
   sem_unlink("buffer_empty");
   sem_buffer_empty = sem_open("buffer_empty", O_CREAT | O_EXCL, 0700, 0);
-  
+
   buffer_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(buffer_mutex, NULL);
 

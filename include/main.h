@@ -55,11 +55,19 @@ pthread_mutex_t *buffer_mutex;
 int configuration_shmid;
 config_t *config;
 
+/* Functions*/
+void main_shutdown_threads();
+void main_shutdown_processes();
+void main_free_thread_memory();
+void main_shutdown();
+
 void main_cleanup();
 void main_init_clients();
 void main_init_semaphores();
 void main_init_scheduler();
 void main_init_config();
 void main_init();
+
+int main(void);
 
 #endif
