@@ -3,19 +3,13 @@
 void main_cleanup() {
   printf("Cleaning up.\n");
 
-  main_reset();
-
-  exit(0);
-}
-
-void main_reset() {
-  printf("Reset.\n");
-
   close(connection_socket);
   close(client_socket);
   msgctl(message_queue_id, IPC_RMID, 0);
 
-  kill(stats_process, SIGHUP);
+  kill(stats_process, SIGINT);
+  
+  exit(0);
 }
 
 void main_init_clients() {
@@ -87,7 +81,7 @@ void main_init_stats() {
 
 void main_init_message_queue() {
   message_queue_id = msgget(IPC_PRIVATE, IPC_CREAT | 0777);
-
+  
   if (message_queue_id < 0) {
     fprintf(stderr, "An error occurred creating the message queue.\n");
     exit(1);
@@ -142,27 +136,15 @@ void main_init() {
   signal(SIGINT, main_cleanup);
 }
 
-void sigtstp_handle() {
-  raise(SIGHUP);
-}
-
-void restart() {
-  main_reset();
-  main_init();
-}
-
 int main(void) {
   main_init();
-
-  signal(SIGHUP, restart);
-  signal(SIGTSTP, sigtstp_handle);
 
   while (true) {
     if ((client_socket = accept(connection_socket,
                                 (struct sockaddr *) &client_name,
                                 &client_name_len)) == -1) {
       fprintf(stderr, "Error accepting connection.\n");
-      //return 1;
+      return 1;
     }
 
     http_request *request = (http_request*) malloc(sizeof(http_request));
