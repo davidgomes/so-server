@@ -61,12 +61,12 @@ void main_init_clients() {
 
 void main_init_semaphores() {
   sem_unlink("buffer_full");
-  sem_buffer_full = sem_open("buffer_full", O_CREAT | O_EXCL, 0700, config->n_threads*2);
+  sem_buffer_full = sem_open("buffer_full", O_CREAT | O_EXCL, 0700, config->n_threads * 2);
 
   sem_unlink("buffer_empty");
   sem_buffer_empty = sem_open("buffer_empty", O_CREAT | O_EXCL, 0700, 0);
 
-  buffer_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  buffer_mutex = (pthread_mutex_t*) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(buffer_mutex, NULL);
 
   sem_unlink("threads");
@@ -96,11 +96,31 @@ void main_init_scheduler() {
   scheduler_args->requests = requests;
 }
 
+void main_init_stats() {
+  stats_process = fork();
+
+  if (stats_process == -1) {
+    fprintf(stderr, "Fork error creating stats process.\n");
+  } else if (stats_process == 0) {
+    stats_start(message_queue_id, "logs.txt");
+    exit(0);
+  } else { }
+}
+
+void main_init_message_queue() {
+  message_queue_id = msgget(IPC_PRIVATE, IPC_CREAT | 0777);
+
+  if (message_queue_id < 0) {
+    fprintf(stderr, "An error occurred creating the message queue.\n");
+    exit(1);
+  }
+}
+
 void main_init_config() {
   pid_t config_process = fork();
 
   if (config_process == -1) {
-    fprintf(stderr, "Fork error.\n");
+    fprintf(stderr, "Fork error creating config process.\n");
   } else if (config_process == 0) {
     config_start(config);
     exit(0);
@@ -116,6 +136,9 @@ void main_init_shared_memory() {
 
 void main_init() {
   int i;
+
+  main_init_message_queue();
+  main_init_stats();
 
   main_init_shared_memory();
   main_init_config();
@@ -141,19 +164,32 @@ void main_init() {
   signal(SIGINT, main_shutdown);
 }
 
+void sigtstp_handle() {
+  close(connection_socket);
+  close(client_socket);
+  msgctl(message_queue_id, IPC_RMID, 0);
+
+  kill(stats_process, SIGINT);
+
+  main_init();
+}
+
 int main(void) {
   main_init();
 
+  signal(SIGTSTP, sigtstp_handle);
+  
   while (true) {
     if ((client_socket = accept(connection_socket,
                                 (struct sockaddr *) &client_name,
-                                &client_name_len)) == -1 ) {
-      printf("Error accepting connection.\n");
-      exit(1);
+                                &client_name_len)) == -1) {
+      fprintf(stderr, "Error accepting connection.\n");
+      //return 1;
     }
 
     http_request *request = (http_request*) malloc(sizeof(http_request));
     http_parse_request(client_socket, request);
+    request->message_queue_id = message_queue_id;
 
     sem_wait(sem_buffer_full);
     pthread_mutex_lock(buffer_mutex);

@@ -7,6 +7,8 @@
 #define SCRIPT_DIR "cgi-bin"
 #define GET_EXPR "GET /"
 
+#define MAX_TIME_STR 100
+
 #define true 1
 #define false 0
 

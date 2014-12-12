@@ -9,6 +9,7 @@
 #include <sys/ioctl.h>
 #include <sys/wait.h>
 #include <sys/shm.h>
+#include <sys/msg.h>
 #include <sys/types.h>
 #include <signal.h>
 #include <semaphore.h>
@@ -23,6 +24,7 @@
 #include "buffer.h"
 #include "scheduler_thread.h"
 #include "config.h"
+#include "stats.h"
 
 int connection_socket;
 struct sockaddr_in client_name;
@@ -55,6 +57,9 @@ pthread_mutex_t *buffer_mutex;
 int configuration_shmid;
 config_t *config;
 
+pid_t stats_process;
+int message_queue_id;
+
 /* Functions*/
 void main_shutdown_threads();
 void main_shutdown_processes();
@@ -62,10 +67,17 @@ void main_free_thread_memory();
 void main_shutdown();
 
 void main_cleanup();
+
 void main_init_clients();
 void main_init_semaphores();
 void main_init_scheduler();
+
+void main_init_stats();
+void main_init_message_queue();
+
 void main_init_config();
+void main_init_shared_memory();
+
 void main_init();
 
 int main(void);

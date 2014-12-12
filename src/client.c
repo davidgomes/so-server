@@ -19,6 +19,18 @@ void *client_code(void* cd) {
     sem_wait(data->sem_threads);
 
     client_serve_request(*(data->request));
+
+    /* Update statistics' message queue */
+    stats_message *message = (stats_message*) malloc(sizeof(stats_message));
+    message->mtype = 1;
+    message->thread_index = data->id;
+    strcpy(message->file_name, (*(data->request))->name);
+
+    http_int_to_type(message->request_type, (*(data->request))->type);
+    
+    msgsnd((*(data->request))->message_queue_id, message,
+           sizeof(stats_message), 0);
+
     sleep(10);
 
     pthread_mutex_lock(data->lock);

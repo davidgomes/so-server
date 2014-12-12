@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <sys/shm.h>
+#include <sys/msg.h>
 #include <sys/types.h>
 #include <semaphore.h>
 #include <signal.h>
@@ -14,6 +15,7 @@
 
 #include "http.h"
 #include "constants.h"
+#include "stats.h"
 
 struct {
   int id;
