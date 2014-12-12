@@ -1,7 +1,18 @@
 #include "scheduler_thread.h"
 
+void cleanup_scheduler() {
+  printf("scheduler_cleanup\n");
+  pthread_exit(0);
+}
+
 void* scheduler_code(void* data) {
   printf("scheduler_thread running\n");
+
+  signal(SIGUSR2, cleanup_scheduler);
+
+  sigset_t set;
+  sigemptyset(&set);
+  sigaddset(&set, SIGUSR2);
 
   scheduler_data* param = (scheduler_data*) data;
   buffer* buf = param->buffer;
@@ -11,6 +22,9 @@ void* scheduler_code(void* data) {
 
   while (true) {
     sem_wait(sem_buffer_empty); // only remove if buffer is not empty
+    sigprocmask(SIG_BLOCK, &set, NULL);
+    //block_signals();
+
     pthread_mutex_lock(buffer_mutex);
     printf("New Request.\n");
     buffer_node* node = buf->first->next;
@@ -59,13 +73,17 @@ void* scheduler_code(void* data) {
 
       pthread_mutex_unlock(&param->thread_locks[i]);
     }
-    if(i >= 10){
-      printf("No worker available\n"); // This might happen if the workers are slow, because when the request is delivered to a worker we remove the request from the buffer, leaving space for more requests, but no thread available.
+
+    if (i >= 10) {
+      printf("No worker available.\n"); // This might happen if the workers are slow, because when the request is delivered to a worker we remove the request from the buffer, leaving space for more requests, but no thread available.
       char error[] = "<!DOCTYPE html>\n <head></head>\n <body> <h2>Server error. No processing units available. </h2> </body>\n\n";
-      //send(best->request->socket, error, strlen(error), 0);
       send(best->request->socket, error, strlen(error), 0);
       close(best->request->socket);
-    }else
+    } else {
       printf("Delivered work to worker %d\n\n", i);
+    }
+
+    sigprocmask(SIG_UNBLOCK, &set, NULL);
   }
+
 }

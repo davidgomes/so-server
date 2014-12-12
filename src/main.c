@@ -1,15 +1,43 @@
 #include "main.h"
 
-void main_cleanup() {
-  printf("Cleaning up.\n");
+void main_shutdown_threads() {
+  printf("%d\n", config->n_threads);
+
+  pthread_kill(scheduler_thread, SIGUSR2);
+  pthread_join(scheduler_thread, NULL);
+
+  int i;
+  for (i = 0; i < config->n_threads; i++) {
+    pthread_kill(client_threads[i], SIGUSR1);
+    pthread_join(client_threads[i], NULL);
+  }
+
+  printf("Threads Killed\n");
+}
+
+void main_shutdown_processes() {
+  // TODO
+}
+
+void main_free_thread_memory() {
+  free(thread_ready);
+  free(requests);
+  free(thread_locks);
+  free(wait_for_work);
+  free(cond_lock);
+  free(workers);
+  free(client_threads);
+  free(scheduler_args);
+
+  printf("Memory Released\n");
+}
+
+void main_shutdown() {
+  main_shutdown_threads();
+  main_free_thread_memory();
+  main_shutdown_processes();
 
   close(connection_socket);
-  close(client_socket);
-  msgctl(message_queue_id, IPC_RMID, 0);
-
-  kill(stats_process, SIGINT);
-
-  exit(0);
 }
 
 void main_init_clients() {
@@ -133,7 +161,7 @@ void main_init() {
     pthread_create(&client_threads[i], NULL, client_code, &(workers[i]));
   }
 
-  signal(SIGINT, main_cleanup);
+  signal(SIGINT, main_shutdown);
 }
 
 void sigtstp_handle() {

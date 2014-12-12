@@ -1,6 +1,13 @@
 #include "client.h"
 
+void cleanup_client() {
+  printf("client_cleanup\n");
+  pthread_exit(0);
+}
+
 void *client_code(void* cd) {
+  signal(SIGUSR1, cleanup_client);
+
   client_data* data = (client_data*) cd;
 
   printf("Thread %d started.\n", data->id);

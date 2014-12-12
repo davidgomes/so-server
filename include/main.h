@@ -60,6 +60,12 @@ config_t *config;
 pid_t stats_process;
 int message_queue_id;
 
+/* Functions*/
+void main_shutdown_threads();
+void main_shutdown_processes();
+void main_free_thread_memory();
+void main_shutdown();
+
 void main_cleanup();
 
 void main_init_clients();
@@ -73,5 +79,7 @@ void main_init_config();
 void main_init_shared_memory();
 
 void main_init();
+
+int main(void);
 
 #endif
