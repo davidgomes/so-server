@@ -151,9 +151,9 @@ int main(void) {
       printf("Error accepting connection.\n");
       exit(1);
     }
+
     http_request *request = (http_request*) malloc(sizeof(http_request));
     http_parse_request(client_socket, request);
-
 
     sem_wait(sem_buffer_full);
     pthread_mutex_lock(buffer_mutex);
