@@ -123,7 +123,7 @@ void main_init_config() {
   } else if (config_process == 0) {
     config_start(config);
   }
-  sleep(2);
+  sleep(1);
 }
 
 void main_init_shared_memory() {
@@ -135,12 +135,10 @@ void main_init() {
 
   main_init_message_queue();
   main_init_stats();
-  printf("OK\n");
 
   main_init_shared_memory();
   printf("Shared memory\n");
   main_init_config();
-  printf("Config OK\n");
 
   server_start();
 }
@@ -211,7 +209,6 @@ void main_run(){
 }
 
 int main(void) {
-  printf("OK\n");
   main_init();
   
   main_run();
