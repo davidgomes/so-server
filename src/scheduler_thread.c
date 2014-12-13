@@ -27,28 +27,35 @@ void* scheduler_code(void* data) {
 
     pthread_mutex_lock(buffer_mutex);
     printf("New Request.\n");
-    buffer_node* node = buf->first->next;
+    buffer_node* node = buf->first;
     buffer_node* parent = buf->first;
     buffer_node* best = NULL;
 
     if (param->policy == FIFO_POLICY) {
       best = node;
     } else {
+      printf("Other policy\n");
       while (node->next != NULL) {
-        if ((param->policy == STATIC_POLICY && node->request->type == STATIC_PAGE) ||
-            (param->policy == DYNAMIC_POLICY && !node->request->type == DYNAMIC_SCRIPT)) {
-          best = node;
+        printf("First\n");
+        if ((param->policy == STATIC_POLICY && node->next->request->type == STATIC_PAGE) ||
+            (param->policy == DYNAMIC_POLICY && !node->next->request->type == DYNAMIC_SCRIPT)) {
+          printf("OK\n");
+          best = node->next;
           break;
         } else {
+          printf("OK2\n");
           if (best == NULL) {
-            best = node;
+            best = node->next;
           }
         }
+        printf("OK\n");
 
         node = node->next;
         parent = parent->next;
       }
     }
+    printf("Found request\n");
+    sleep(10);
 
     printf("On scheduler_code: work with name: %s\n", best->request->name);
 
