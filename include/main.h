@@ -79,6 +79,10 @@ void main_init_config();
 void main_init_shared_memory();
 
 void main_init();
+void main_run();
+
+void server_close();
+void server_start();
 
 int main(void);
 
