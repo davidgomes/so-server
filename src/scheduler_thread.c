@@ -74,7 +74,7 @@ void* scheduler_code(void* data) {
       pthread_mutex_unlock(&param->thread_locks[i]);
     }
 
-    if (i >= 10) {
+    if (i >= param->n_threads) {
       printf("No worker available.\n"); // This might happen if the workers are slow, because when the request is delivered to a worker we remove the request from the buffer, leaving space for more requests, but no thread available.
       char error[] = "<!DOCTYPE html>\n <head></head>\n <body> <h2>Server error. No processing units available. </h2> </body>\n\n";
       send(best->request->socket, error, strlen(error), 0);
@@ -85,5 +85,4 @@ void* scheduler_code(void* data) {
 
     sigprocmask(SIG_UNBLOCK, &set, NULL);
   }
-
 }

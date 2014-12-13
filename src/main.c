@@ -145,7 +145,7 @@ void main_init() {
   server_start();
 }
 
-void server_start(){
+void server_start() {
   printf("Number of threads in config: %d\n", config->n_threads);
 
   request_buffer = buffer_create(config->n_threads * 2);
@@ -166,7 +166,7 @@ void server_start(){
   }
 }
 
-void server_close(){
+void server_close() {
   main_shutdown_threads();
   main_free_thread_memory();
   close(connection_socket);
@@ -178,14 +178,14 @@ void main_reload_config() {
   printf("%d\n", config_process);
   server_close();
   kill(config_process, SIGHUP);
-  sleep(1); // We must find a better way to wait for the config process to read the config file.
+  sleep(1); // FIXME We must find a better way to wait for the config process to read the config file.
   server_start();
 
   printf("Restarted threads and memory\n");
 
 }
 
-void main_run(){
+void main_run() {
   printf("Running main\n");
   signal(SIGINT, main_shutdown);
   signal(SIGTSTP, main_reload_config);
@@ -195,27 +195,24 @@ void main_run(){
                                 (struct sockaddr *) &client_name,
                                 &client_name_len)) == -1) {
       fprintf(stderr, "Error accepting connection.\n");
-      //return 1;
+    } else {
+      http_request *request = (http_request*) malloc(sizeof(http_request));
+      http_parse_request(client_socket, request);
+      request->message_queue_id = message_queue_id;
+
+      sem_wait(sem_buffer_full);
+      pthread_mutex_lock(buffer_mutex);
+      buffer_add(request_buffer, request);
+      pthread_mutex_unlock(buffer_mutex);
+      sem_post(sem_buffer_empty);
     }
-
-    http_request *request = (http_request*) malloc(sizeof(http_request));
-    http_parse_request(client_socket, request);
-    request->message_queue_id = message_queue_id;
-
-    sem_wait(sem_buffer_full);
-    pthread_mutex_lock(buffer_mutex);
-    buffer_add(request_buffer, request);
-    pthread_mutex_unlock(buffer_mutex);
-    sem_post(sem_buffer_empty);
   }
 }
 
 int main(void) {
-  printf("OK\n");
   main_init();
-  
-  main_run();
 
+  main_run();
 
   return 0;
 }
