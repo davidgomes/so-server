@@ -33,12 +33,22 @@ void main_free_thread_memory() {
 }
 
 void main_shutdown() {
+  server_close();
+  exit(0);
+  
+}
+
+void server_close(){
   main_shutdown_threads();
   main_free_thread_memory();
   main_shutdown_processes();
-
   close(connection_socket);
-  exit(0);
+}
+
+void restart_threads(){
+  server_close();
+
+  server_start();
 }
 
 void main_init_clients() {
@@ -136,7 +146,6 @@ void main_init_shared_memory() {
 }
 
 void main_init() {
-  int i;
 
   main_init_message_queue();
   main_init_stats();
@@ -144,6 +153,10 @@ void main_init() {
   main_init_shared_memory();
   main_init_config();
 
+  server_start();
+}
+
+void server_start(){
   printf("Number of threads in config: %d\n", config->n_threads);
 
   request_buffer = buffer_create(config->n_threads * 2);
@@ -158,28 +171,31 @@ void main_init() {
 
   pthread_create(&scheduler_thread, NULL, scheduler_code, scheduler_args);
 
+  int i;
   for (i = 0; i < config->n_threads; i++) {
     pthread_create(&client_threads[i], NULL, client_code, &(workers[i]));
   }
-
-  signal(SIGINT, main_shutdown);
 }
 
 void sigtstp_handle() {
-  close(connection_socket);
-  close(client_socket);
-  msgctl(message_queue_id, IPC_RMID, 0);
+  //close(connection_socket);
+  //close(client_socket);
+  //msgctl(message_queue_id, IPC_RMID, 0);
 
-  kill(stats_process, SIGINT);
+  //kill(stats_process, SIGINT);
 
-  main_init();
+  //main_init();
+  printf("Control Z\n");
+  restart_threads();
+  printf("Restarted threads and memory\n");
+  //main_run();
 }
 
-int main(void) {
-  main_init();
-
+void main_run(){
+  printf("Running main\n");
+  signal(SIGINT, main_shutdown);
   signal(SIGTSTP, sigtstp_handle);
-  
+
   while (true) {
     if ((client_socket = accept(connection_socket,
                                 (struct sockaddr *) &client_name,
@@ -198,6 +214,13 @@ int main(void) {
     pthread_mutex_unlock(buffer_mutex);
     sem_post(sem_buffer_empty);
   }
+}
+
+int main(void) {
+  main_init();
+  
+  main_run();
+
 
   return 0;
 }
