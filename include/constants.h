@@ -8,6 +8,11 @@
 #define GET_EXPR "GET /"
 
 #define MAX_TIME_STR 100
+#define SORT_TYPE_STR 100
+
+#define FIFO_POLICY 0
+#define STATIC_POLICY 1
+#define DYNAMIC_POLICY 2
 
 #define true 1
 #define false 0

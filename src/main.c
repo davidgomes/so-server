@@ -88,7 +88,7 @@ void main_init_scheduler() {
   scheduler_args->sem_buffer_full = sem_buffer_full;
   scheduler_args->buffer_mutex = buffer_mutex;
   scheduler_args->sem_threads = sem_threads;
-  scheduler_args->policy = FIFO_POLICY;
+  scheduler_args->policy = config->policy_type;
   scheduler_args->thread_ready = thread_ready;
   scheduler_args->thread_locks = thread_locks;
   scheduler_args->wait_for_work = wait_for_work;

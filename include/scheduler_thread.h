@@ -8,10 +8,7 @@
 #include <signal.h>
 
 #include "buffer.h"
-
-#define FIFO_POLICY 0
-#define STATIC_POLICY 1
-#define DYNAMIC_POLICY 2
+#include "constants.h"
 
 struct {
   buffer *buffer;
