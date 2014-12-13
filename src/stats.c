@@ -4,7 +4,7 @@ void stats_start(int _message_queue_id, char log_file_name[]) {
   utils_get_current_time(start_time_str);
   
   signal(SIGINT, stats_close);
-  signal(SIGHUP, stats_close);
+  //signal(SIGHUP, stats_close);
 
   message_queue_id = _message_queue_id;
   log_file = fopen(log_file_name, "a");
@@ -37,6 +37,7 @@ void stats_loop() {
 
 void stats_close() {
   /* Write closing logs */
+  printf("Stats close\n");
   fprintf(log_file, "Started at %s\n", start_time_str);
 
   char stop_time_str[MAX_TIME_STR];

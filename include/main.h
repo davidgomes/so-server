@@ -58,6 +58,7 @@ int configuration_shmid;
 config_t *config;
 
 pid_t stats_process;
+pid_t config_process;
 int message_queue_id;
 
 /* Functions*/

@@ -16,7 +16,8 @@ void main_shutdown_threads() {
 }
 
 void main_shutdown_processes() {
-  // TODO
+  kill(config_process, SIGINT);
+  kill(stats_process, SIGINT);
 }
 
 void main_free_thread_memory() {
@@ -34,21 +35,8 @@ void main_free_thread_memory() {
 
 void main_shutdown() {
   server_close();
-  exit(0);
-  
-}
-
-void server_close(){
-  main_shutdown_threads();
-  main_free_thread_memory();
   main_shutdown_processes();
-  close(connection_socket);
-}
-
-void restart_threads(){
-  server_close();
-
-  server_start();
+  exit(0);
 }
 
 void main_init_clients() {
@@ -128,16 +116,14 @@ void main_init_message_queue() {
 }
 
 void main_init_config() {
-  pid_t config_process = fork();
+  config_process = fork();
 
   if (config_process == -1) {
     fprintf(stderr, "Fork error creating config process.\n");
   } else if (config_process == 0) {
     config_start(config);
-    exit(0);
-  } else {
-    wait(NULL);
   }
+  sleep(2);
 }
 
 void main_init_shared_memory() {
@@ -149,9 +135,12 @@ void main_init() {
 
   main_init_message_queue();
   main_init_stats();
+  printf("OK\n");
 
   main_init_shared_memory();
+  printf("Shared memory\n");
   main_init_config();
+  printf("Config OK\n");
 
   server_start();
 }
@@ -177,24 +166,29 @@ void server_start(){
   }
 }
 
-void sigtstp_handle() {
-  //close(connection_socket);
-  //close(client_socket);
-  //msgctl(message_queue_id, IPC_RMID, 0);
+void server_close(){
+  main_shutdown_threads();
+  main_free_thread_memory();
+  close(connection_socket);
+}
 
-  //kill(stats_process, SIGINT);
+void main_reload_config() {
 
-  //main_init();
-  printf("Control Z\n");
-  restart_threads();
+  printf("Reloading configuration\n");
+  printf("%d\n", config_process);
+  server_close();
+  kill(config_process, SIGHUP);
+  sleep(1); // We must find a better way to wait for the config process to read the config file.
+  server_start();
+
   printf("Restarted threads and memory\n");
-  //main_run();
+
 }
 
 void main_run(){
   printf("Running main\n");
   signal(SIGINT, main_shutdown);
-  signal(SIGTSTP, sigtstp_handle);
+  signal(SIGTSTP, main_reload_config);
 
   while (true) {
     if ((client_socket = accept(connection_socket,
@@ -217,6 +211,7 @@ void main_run(){
 }
 
 int main(void) {
+  printf("OK\n");
   main_init();
   
   main_run();
