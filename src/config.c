@@ -1,6 +1,12 @@
 #include "config.h"
 
 void config_read() {
+
+  sigset_t mask2;
+  sigemptyset(&mask2);
+  sigaddset(&mask2, SIGHUP);
+  sigprocmask(SIG_BLOCK, &mask2, NULL);
+
   FILE *config_file = fopen("../data/config.txt", "r");
 
   int n_threads;
@@ -33,8 +39,10 @@ void config_read() {
 
   fclose(config_file);
 
-  pthread_cond_broadcast(wait_for_config);
+  //pthread_cond_broadcast(wait_for_config);
+  pthread_mutex_unlock(config_mutex); //solves racing problem
   printf("Read Configuration\n");
+  sigprocmask(SIG_UNBLOCK, &mask2, NULL);
 }
 
 void config_sighup_handler() {

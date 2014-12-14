@@ -134,7 +134,8 @@ void main_init_config() {
 
   pthread_cond_init(wait_for_config, &cond_attr);
   pthread_mutex_init(config_mutex, &mutex_attr);
-
+  
+  pthread_mutex_lock(config_mutex);
   config_process = fork();
   if (config_process == -1) {
     fprintf(stderr, "Fork error creating config process.\n");
@@ -143,8 +144,9 @@ void main_init_config() {
   }
 
   pthread_mutex_lock(config_mutex);
-  pthread_cond_wait(wait_for_config, config_mutex);
   pthread_mutex_unlock(config_mutex);
+  //pthread_cond_wait(wait_for_config, config_mutex);
+  //pthread_mutex_unlock(config_mutex);
   utils_debug("Config Read\n");
 }
 
@@ -195,23 +197,33 @@ void server_close() {
 }
 
 void main_reload_config() {
+
+  sigset_t mask2;
+  sigemptyset(&mask2);
+  sigaddset(&mask2, SIGTSTP);
+  sigprocmask(SIG_BLOCK, &mask2, NULL);
+
   printf("Reloading configuration\n");
   printf("%d\n", config_process);
   server_close();
+
+  pthread_mutex_lock(config_mutex); //solves racing problem
   kill(config_process, SIGHUP);
 
   utils_debug("Sent SIGHUP\n");
 
   // waits for configuration to be read
-  pthread_mutex_lock(config_mutex);
-  pthread_cond_wait(wait_for_config, config_mutex);
-  pthread_mutex_unlock(config_mutex);
+  pthread_mutex_lock(config_mutex); //solves racing problem
+  //pthread_cond_wait(wait_for_config, config_mutex);
+  pthread_mutex_unlock(config_mutex); //solves racing problem
 
   utils_debug("configuration Reloaded\n");
 
   server_start();
 
-  utils_debug("Restarted threads and memory\n");
+  utils_debug("Restarted threads and memory\n\n\n");
+
+  sigprocmask(SIG_UNBLOCK, &mask2, NULL);
 }
 
 void main_run() {

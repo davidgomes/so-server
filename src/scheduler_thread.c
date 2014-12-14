@@ -25,6 +25,7 @@ void* scheduler_code(void* data) {
   utils_debug(debug_str);
 
   while (true) {
+    sigprocmask(SIG_UNBLOCK, &set, NULL);
     sem_wait(sem_buffer_empty); // only remove if buffer is not empty
     sigprocmask(SIG_BLOCK, &set, NULL);
     //block_signals();
@@ -62,7 +63,7 @@ void* scheduler_code(void* data) {
     }
 
     printf("On Scheduler: Found request\n");
-    printf("On Scheduler: request type %s\n", node->request->type == STATIC_PAGE ? "STATIC_PAGE" : "DYNAMIC_SCRIPT" );
+    printf("On Scheduler: request type %s\n", best->request->type == STATIC_PAGE ? "STATIC_PAGE" : "DYNAMIC_SCRIPT" );
     printf("On Scheduler: work with name: %s\n\n", best->request->name);
 
     parentbest->next = best->next;
@@ -72,23 +73,29 @@ void* scheduler_code(void* data) {
 
     //sleep(5);
 
-    if (node->request->type == DYNAMIC_SCRIPT) {
+    if (best->request->type == DYNAMIC_SCRIPT) {
       utils_debug("New dynamic script: ");
-      printf("%s\n", node->request->name);
+      printf("%s\n", best->request->name);
       
       int script_allowed = 0;
 
       int u;
       for (u = 0; u < param->n_scripts; u++) {
-        if (!strcmp(param->scripts[u], node->request->name)) {
+        if (!strcmp(param->scripts[u], best->request->name)) {
           script_allowed = 1;
         }
       }
 
       if (!script_allowed) {
-        printf("%s\n", node->request->name);
+        printf("%s\n", best->request->name);
         utils_debug("This script is not allowed.\n");
         // TODO Michel este script nao pode ser corrido, que se faz
+        char error[] = "Script not allowed.<br>";
+        http_send_header(best->request->socket, "text/html");
+        send(best->request->socket, error, strlen(error), 0);
+        close(best->request->socket);
+
+        continue;
       }
     }
 
@@ -118,6 +125,5 @@ void* scheduler_code(void* data) {
       printf("Delivered work to worker %d\n\n", i);
     }
 
-    sigprocmask(SIG_UNBLOCK, &set, NULL);
   }
 }

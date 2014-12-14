@@ -72,32 +72,15 @@ void client_serve_request(http_request* request) {
    * Execute a script and get output back from a file passed with a pipe.
    */
   if (request->type == DYNAMIC_SCRIPT) {
-    int i;
-    int allowed = 0;
-    char test[SIZE_BUF];
 
-    for(i=0; i<config->n_scripts; i++){
-      test[0] = 0;
-      sprintf(test, "../data/cgi-bin/%s", config->scripts[i]);
-      if(strcmp(test, file_name) == 0){
-        allowed = 1;
-        break;
-      }
+    FILE *pipe_output = popen(file_name, "r");
+    char output_buffer[SIZE_BUF];
+    while (fgets(output_buffer, sizeof(output_buffer), pipe_output) != NULL) {
+      send(request->socket, "<p>", 3, 0);
+      send(request->socket, output_buffer, strlen(output_buffer), 0);
+      send(request->socket, "</p>", 4, 0);
     }
-    if(allowed){
-      FILE *pipe_output = popen(file_name, "r");
-      char output_buffer[SIZE_BUF];
-      while (fgets(output_buffer, sizeof(output_buffer), pipe_output) != NULL) {
-        send(request->socket, "<p>", 3, 0);
-        send(request->socket, output_buffer, strlen(output_buffer), 0);
-        send(request->socket, "</p>", 4, 0);
-      }
-      pclose(pipe_output);
-    
-    }else{
-      char error[] = "Script not allowed.<br>";
-      send(request->socket, error, strlen(error), 0);
-    }
+    pclose(pipe_output);
     
 
   } else if (request->type == STATIC_PAGE) {
