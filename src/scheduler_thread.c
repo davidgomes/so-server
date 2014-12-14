@@ -71,7 +71,7 @@ void* scheduler_code(void* data) {
     pthread_mutex_unlock(buffer_mutex);
     sem_post(sem_buffer_full);
 
-    //sleep(5);
+    //sleep(1);
 
     if (best->request->type == DYNAMIC_SCRIPT) {
       utils_debug("New dynamic script: ");
