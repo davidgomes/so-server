@@ -13,6 +13,8 @@ void config_read() {
   g_config->port = port;
 
   fclose(config_file);
+
+  pthread_cond_broadcast(wait_for_config);
   printf("Read Configuration\n");
 }
 
@@ -21,28 +23,27 @@ void sighandler() {
   config_read();
 }
 
-void ignorestp() {
-  //printf("IGNORING\n");
-}
-
 void config_shutdown() {
   exit(0);
 }
 
-void config_start(config_t *config) {
-  g_config = config;
+void config_start (config_args_t *config_args) {
+  g_config = &config_args->config;
+  wait_for_config = &config_args->wait_for_config;
+  config_mutex = &config_args->config_mutex;
+  
   config_read();
 
   signal(SIGHUP, sighandler);
-  signal(SIGTSTP, ignorestp);
   signal(SIGINT, config_shutdown);
 
   sigemptyset(&mask);
-  sigaddset(&mask, SIGHUP);
+  sigaddset(&mask, SIGTSTP);
+  sigprocmask(SIG_BLOCK, &mask, NULL);
 
-  while (true) {
+  printf("Config will now wait\n");
+  while (true)
     sigsuspend(&mask);
-  }
 
   printf("Exiting\n");
 }

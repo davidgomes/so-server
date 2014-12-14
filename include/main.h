@@ -56,6 +56,9 @@ pthread_mutex_t *buffer_mutex;
 
 int configuration_shmid;
 config_t *config;
+pthread_cond_t *wait_for_config;
+pthread_mutex_t *config_mutex;
+config_args_t *config_args;
 
 pid_t stats_process;
 pid_t config_process;

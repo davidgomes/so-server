@@ -14,7 +14,8 @@ void *client_code(void* cd) {
 
   while (true) {
     pthread_cond_wait(data->wait_for_work, data->cond_lock);
-    //printf("On client_code %d: Received work.\n", data->id);
+    printf("Cond var released\n");
+    printf("On client_code %d: Received work.\n", data->id);
 
     sem_wait(data->sem_threads);
 

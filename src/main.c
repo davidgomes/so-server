@@ -116,19 +116,38 @@ void main_init_message_queue() {
 }
 
 void main_init_config() {
-  config_process = fork();
 
+  pthread_condattr_t cond_attr;
+  pthread_condattr_init(&cond_attr);
+  printf("shared: %d\n", pthread_condattr_setpshared(&cond_attr, PTHREAD_PROCESS_SHARED));
+
+  pthread_mutexattr_t mutex_attr;
+  pthread_mutexattr_init(&mutex_attr);
+  printf("shared: %d\n", pthread_mutexattr_setpshared(&mutex_attr, PTHREAD_PROCESS_SHARED));
+
+  pthread_cond_init(wait_for_config, &cond_attr);
+  pthread_mutex_init(config_mutex, &mutex_attr);
+
+  config_process = fork();
   if (config_process == -1) {
     fprintf(stderr, "Fork error creating config process.\n");
   } else if (config_process == 0) {
-    config_start(config);
+    config_start(config_args);
   }
-  sleep(1);
+  
+  pthread_mutex_lock(config_mutex);
+  pthread_cond_wait(wait_for_config, config_mutex);
+  pthread_mutex_unlock(config_mutex);
+  printf("Config Read\n");
+
 }
 
 void main_init_shared_memory() {
-  configuration_shmid = shmget(IPC_PRIVATE, sizeof(config_t), IPC_CREAT | 0700);
-  config = (config_t*) shmat(configuration_shmid, NULL, 0);
+  configuration_shmid = shmget(IPC_PRIVATE, sizeof(config_args_t), IPC_CREAT | 0700);
+  config_args = (config_args_t*) shmat(configuration_shmid, NULL, 0);
+  config = &config_args->config;
+  wait_for_config = &config_args->wait_for_config;
+  config_mutex = &config_args->config_mutex;
 }
 
 void main_init() {
@@ -176,7 +195,16 @@ void main_reload_config() {
   printf("%d\n", config_process);
   server_close();
   kill(config_process, SIGHUP);
-  sleep(1); // FIXME We must find a better way to wait for the config process to read the config file.
+
+  printf("Sent SIGHUP\n");
+  
+  // waits for configuration to be read
+  pthread_mutex_lock(config_mutex);
+  pthread_cond_wait(wait_for_config, config_mutex);
+  pthread_mutex_unlock(config_mutex);
+
+  printf("configuration Reloaded\n");
+  
   server_start();
 
   printf("Restarted threads and memory\n");
@@ -198,18 +226,16 @@ void main_run() {
       request->message_queue_id = message_queue_id;
       http_parse_request(client_socket, request);
 
-      //check if there is space in the buffer
       
       pthread_mutex_lock(buffer_mutex);
-      
       printf("New Request with type %d, buffer size:%d\n", request->type, request_buffer->cur_size);
-      if(request_buffer->cur_size == request_buffer->size){
+      if (request_buffer->cur_size == request_buffer->size) { //check if there is space in the buffer
         printf("No buffer space available.\n"); // This might happen if the workers are slow, because when the request is delivered to a worker we remove the request from the buffer, leaving space for more requests, but no thread available.
         char error[] = "<!DOCTYPE html>\n <head></head>\n <body> <h2>Server error. No buffer space available. </h2> </body>\n\n";
         send(request->socket, error, strlen(error), 0);
         close(request->socket);
         pthread_mutex_unlock(buffer_mutex);
-      }else{
+      } else {
         sem_wait(sem_buffer_full);
         
         buffer_add(request_buffer, request);
