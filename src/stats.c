@@ -37,7 +37,6 @@ void stats_loop() {
     if (!strcmp(new_message->request_type, "STATIC_PAGE")) {
       static_requests++;
     } else if (!strcmp(new_message->request_type, "DYNAMIC_SCRIPT")) {
-      printf("hi\n");
       dynamic_requests++;
     }
 

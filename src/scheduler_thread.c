@@ -47,18 +47,17 @@ void* scheduler_code(void* data) {
           parentbest = parent;
           best = node;
           break;
-        } else if(best == NULL){
+        } else if(best == NULL) {
           parentbest = parent;
           best = node;
         }
 
-        if(node->next != NULL){
+        if (node->next != NULL) {
           parent = parent->next;
           node = node->next;
-        }else{
+        } else {
           break;
         }
-
       }
     }
 
@@ -73,6 +72,28 @@ void* scheduler_code(void* data) {
 
     //sleep(5);
 
+    printf("hi\n");
+
+    if (node->request->type == DYNAMIC_SCRIPT) {
+      utils_debug("New dynamic script: ");
+      printf("%s\n", node->request->name);
+      
+      int script_allowed = 0;
+
+      int u;
+      for (u = 0; u < param->n_scripts; u++) {
+        if (!strcmp(param->scripts[u], node->request->name)) {
+          script_allowed = 1;
+        }
+      }
+
+      if (!script_allowed) {
+        printf("%s\n", node->request->name);
+        utils_debug("This script is not allowed.\n");
+
+        // TODO Michel este script nao pode ser corrido, que se faz
+      }
+    }
 
     int i;
     for (i = 0; i < param->n_threads; i++) {

@@ -7,12 +7,16 @@
 #include <pthread.h>
 #include <string.h>
 
+#include "utils.h"
 #include "constants.h"
 
 struct {
   int n_threads;
   int port;
   int policy_type;
+
+  int n_scripts;
+  char scripts[MAX_SCRIPTS][SCRIPT_NAME_STR];
 } typedef config_t;
 
 struct {

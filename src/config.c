@@ -16,6 +16,21 @@ void config_read() {
   fscanf(config_file, "%s", sort_type);
   g_config->policy_type = config_sort_type_str_to_int(sort_type);
 
+  int n_scripts;
+  fscanf(config_file, "%d", &n_scripts);
+  g_config->n_scripts = n_scripts;
+
+  char debug_str[100];
+  sprintf(debug_str, "There are %d allowed scripts in the configuration.\n", n_scripts);
+  utils_debug(debug_str);
+
+  int i;
+  for (i = 0; i < n_scripts; i++) {
+    char str[100];
+    fscanf(config_file, "%s", str);
+    strcpy(g_config->scripts[i], str);
+  }
+
   fclose(config_file);
 
   pthread_cond_broadcast(wait_for_config);

@@ -21,6 +21,9 @@ struct {
   pthread_mutex_t *thread_locks;
   pthread_cond_t *wait_for_work;
   pthread_mutex_t *cond_lock;
+
+  int n_scripts;
+  char scripts[MAX_SCRIPTS][SCRIPT_NAME_STR];
 } typedef scheduler_data;
 
 void *scheduler_code(void *data);

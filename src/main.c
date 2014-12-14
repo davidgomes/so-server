@@ -93,6 +93,13 @@ void main_init_scheduler() {
   scheduler_args->thread_locks = thread_locks;
   scheduler_args->wait_for_work = wait_for_work;
   scheduler_args->requests = requests;
+  scheduler_args->n_scripts = config->n_scripts;
+
+  int i;
+  for (i = 0; i < MAX_SCRIPTS; i++) {
+    memcpy(&(scheduler_args->scripts)[i], &(config->scripts)[i],
+           sizeof(config->scripts[0]));
+  }
 }
 
 void main_init_stats() {
@@ -133,7 +140,7 @@ void main_init_config() {
   } else if (config_process == 0) {
     config_start(config_args);
   }
-  
+
   pthread_mutex_lock(config_mutex);
   pthread_cond_wait(wait_for_config, config_mutex);
   pthread_mutex_unlock(config_mutex);
@@ -193,14 +200,14 @@ void main_reload_config() {
   kill(config_process, SIGHUP);
 
   utils_debug("Sent SIGHUP\n");
-  
+
   // waits for configuration to be read
   pthread_mutex_lock(config_mutex);
   pthread_cond_wait(wait_for_config, config_mutex);
   pthread_mutex_unlock(config_mutex);
 
   utils_debug("configuration Reloaded\n");
-  
+
   server_start();
 
   utils_debug("Restarted threads and memory\n");
@@ -231,7 +238,7 @@ void main_run() {
         pthread_mutex_unlock(buffer_mutex);
       } else {
         sem_wait(sem_buffer_full);
-        
+
         buffer_add(request_buffer, request);
         pthread_mutex_unlock(buffer_mutex);
         sem_post(sem_buffer_empty);
@@ -242,7 +249,7 @@ void main_run() {
 
 int main(void) {
   utils_debug("Started server.\n");
-  
+
   main_init();
 
   main_run();
