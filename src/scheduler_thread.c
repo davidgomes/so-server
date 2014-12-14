@@ -40,8 +40,9 @@ void* scheduler_code(void* data) {
       parentbest = parent;
     } else {
       while (node != NULL) {
+        //printf("on buffer iteration: request type %s\n", node->request->type == STATIC_PAGE ? "STATIC_PAGE" : "DYNAMIC_SCRIPT" );
         if ((param->policy == STATIC_POLICY && node->request->type == STATIC_PAGE) ||
-            (param->policy == DYNAMIC_POLICY && !node->request->type == DYNAMIC_SCRIPT)) {
+            (param->policy == DYNAMIC_POLICY && node->request->type == DYNAMIC_SCRIPT)) {
           parentbest = parent;
           best = node;
           break;
@@ -50,7 +51,7 @@ void* scheduler_code(void* data) {
           best = node;
         }
 
-        if(node->next == NULL){
+        if(node->next != NULL){
           parent = parent->next;
           node = node->next;
         }else{
@@ -59,7 +60,9 @@ void* scheduler_code(void* data) {
 
       }
     }
+
     printf("On Scheduler: Found request\n");
+    printf("On Scheduler: request type %s\n", node->request->type == STATIC_PAGE ? "STATIC_PAGE" : "DYNAMIC_SCRIPT" );
     printf("On Scheduler: work with name: %s\n\n", best->request->name);
 
     parentbest->next = best->next;
