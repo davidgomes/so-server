@@ -14,7 +14,7 @@ void *client_code(void* cd) {
 
   while (true) {
     pthread_cond_wait(data->wait_for_work, data->cond_lock);
-    printf("On client_code %d: Received work.\n", data->id);
+    //printf("On client_code %d: Received work.\n", data->id);
 
     sem_wait(data->sem_threads);
 
@@ -31,14 +31,12 @@ void *client_code(void* cd) {
     msgsnd((*(data->request))->message_queue_id, message,
            sizeof(stats_message), 0);
 
-    sleep(10);
-
     pthread_mutex_lock(data->lock);
     *(data->ready) = 1;
     pthread_mutex_unlock(data->lock);
 
     sem_post(data->sem_threads);
-    printf("On client_code %d: Finished work.\n", data->id);
+    //printf("On client_code %d: Finished work.\n", data->id);
   }
 
   return NULL;

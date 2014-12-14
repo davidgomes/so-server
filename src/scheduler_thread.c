@@ -20,49 +20,55 @@ void* scheduler_code(void* data) {
   sem_t *sem_buffer_full = param->sem_buffer_full;
   pthread_mutex_t *buffer_mutex = param->buffer_mutex;
 
+  printf("is static %d\n", param->policy == STATIC_POLICY);
+
   while (true) {
     sem_wait(sem_buffer_empty); // only remove if buffer is not empty
     sigprocmask(SIG_BLOCK, &set, NULL);
     //block_signals();
 
     pthread_mutex_lock(buffer_mutex);
-    printf("New Request.\n");
-    buffer_node* node = buf->first;
+    printf("On Scheduler: New Request\n");
+    buffer_node* node = buf->first->next;
     buffer_node* parent = buf->first;
     buffer_node* best = NULL;
+    buffer_node* parentbest = NULL;
+
 
     if (param->policy == FIFO_POLICY) {
       best = node;
+      parentbest = parent;
     } else {
-      printf("Other policy\n");
-      while (node->next != NULL) {
-        printf("First\n");
-        if ((param->policy == STATIC_POLICY && node->next->request->type == STATIC_PAGE) ||
-            (param->policy == DYNAMIC_POLICY && !node->next->request->type == DYNAMIC_SCRIPT)) {
-          printf("OK\n");
-          best = node->next;
+      while (node != NULL) {
+        if ((param->policy == STATIC_POLICY && node->request->type == STATIC_PAGE) ||
+            (param->policy == DYNAMIC_POLICY && !node->request->type == DYNAMIC_SCRIPT)) {
+          parentbest = parent;
+          best = node;
           break;
-        } else {
-          printf("OK2\n");
-          if (best == NULL) {
-            best = node->next;
-          }
+        } else if(best == NULL){
+          parentbest = parent;
+          best = node;
         }
-        printf("OK\n");
 
-        node = node->next;
-        parent = parent->next;
+        if(node->next == NULL){
+          parent = parent->next;
+          node = node->next;
+        }else{
+          break;
+        }
+
       }
     }
-    printf("Found request\n");
-    sleep(10);
+    printf("On Scheduler: Found request\n");
+    printf("On Scheduler: work with name: %s\n\n", best->request->name);
 
-    printf("On scheduler_code: work with name: %s\n", best->request->name);
-
-    parent->next = best->next;
+    parentbest->next = best->next;
     buf->cur_size--;
     pthread_mutex_unlock(buffer_mutex);
     sem_post(sem_buffer_full);
+
+    sleep(5);
+
 
     int i;
     for (i = 0; i < param->n_threads; i++) {

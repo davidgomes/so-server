@@ -197,9 +197,19 @@ void main_run(){
     }
 
     http_request *request = (http_request*) malloc(sizeof(http_request));
-    http_parse_request(client_socket, request);
-    printf("%d\n", request->type);
     request->message_queue_id = message_queue_id;
+    http_parse_request(client_socket, request);
+
+    //check if there is space in the buffer
+    pthread_mutex_lock(buffer_mutex);
+    printf("New Request with type %d, buffer size:%d\n", request->type, request_buffer->cur_size);
+    if(request_buffer->cur_size == request_buffer->size){
+      printf("No buffer space available.\n"); // This might happen if the workers are slow, because when the request is delivered to a worker we remove the request from the buffer, leaving space for more requests, but no thread available.
+      char error[] = "<!DOCTYPE html>\n <head></head>\n <body> <h2>Server error. No buffer space available. </h2> </body>\n\n";
+      send(request->socket, error, strlen(error), 0);
+      close(request->socket);
+    }
+    pthread_mutex_unlock(buffer_mutex);
 
     sem_wait(sem_buffer_full);
     pthread_mutex_lock(buffer_mutex);
