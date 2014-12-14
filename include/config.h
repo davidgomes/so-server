@@ -14,9 +14,9 @@ struct {
 } typedef config_t;
 
 struct {
-	config_t config;
-	pthread_cond_t wait_for_config;
-	pthread_mutex_t config_mutex;
+  config_t config;
+  pthread_cond_t wait_for_config;
+  pthread_mutex_t config_mutex;
 } typedef config_args_t;
 
 config_t *g_config;

@@ -24,6 +24,8 @@ int dynamic_requests;
 FILE *log_file;
 int message_queue_id;
 
+sigset_t mask;
+
 void stats_start(int _message_queue_id, char log_file_name[]);
 void stats_loop();
 void stats_close();

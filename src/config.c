@@ -27,7 +27,7 @@ void config_shutdown() {
   exit(0);
 }
 
-void config_start (config_args_t *config_args) {
+void config_start(config_args_t *config_args) {
   g_config = &config_args->config;
   wait_for_config = &config_args->wait_for_config;
   config_mutex = &config_args->config_mutex;
@@ -42,8 +42,9 @@ void config_start (config_args_t *config_args) {
   sigprocmask(SIG_BLOCK, &mask, NULL);
 
   printf("Config will now wait\n");
-  while (true)
+  while (true) {
     sigsuspend(&mask);
+  }
 
   printf("Exiting\n");
 }

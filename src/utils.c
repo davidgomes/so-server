@@ -70,3 +70,10 @@ void utils_get_prefix_directory(char *result, char file_name[]) {
     result[i++] = *(prefix++);
   }
 }
+
+void utils_debug(char to_print[]) {
+  #ifdef DEBUG
+  printf("%s%s", KRED, to_print);
+  printf("%s", KWHT);
+  #endif
+}

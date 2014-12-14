@@ -2,23 +2,29 @@
 
 void stats_start(int _message_queue_id, char log_file_name[]) {
   utils_get_current_time(start_time_str);
-  
+
   signal(SIGINT, stats_close);
   //signal(SIGHUP, stats_close);
+
+  sigemptyset(&mask);
+  sigaddset(&mask, SIGTSTP);
+  sigprocmask(SIG_BLOCK, &mask, NULL);
 
   message_queue_id = _message_queue_id;
   log_file = fopen(log_file_name, "a");
 
   static_requests = 0;
   dynamic_requests = 0;
-  
+
   stats_loop();
 }
 
-void stats_loop() {  
+void stats_loop() {
   stats_message *new_message = (stats_message*) malloc(sizeof(stats_message));
 
   while (true) {
+    sigsuspend(&mask);
+    
     msgrcv(message_queue_id, new_message, sizeof(stats_message), 1, 0);
 
     char time_str[MAX_TIME_STR];
@@ -29,10 +35,10 @@ void stats_loop() {
     } else if (!strcmp(new_message->request_type, "DYNAMIC_SCRIPT")) {
       dynamic_requests++;
     }
-    
+
     fprintf(log_file, "%s %s %s %d\n", new_message->request_type,
             time_str, new_message->file_name, new_message->thread_index);
-  }  
+  }
 }
 
 void stats_close() {
@@ -45,7 +51,7 @@ void stats_close() {
   fprintf(log_file, "Closed at %s\n", stop_time_str);
   fprintf(log_file, "Static Requests %d\n", static_requests);
   fprintf(log_file, "Dynamic Requests %d\n", dynamic_requests);
-  
+
   fclose(log_file);
   exit(0);
 }

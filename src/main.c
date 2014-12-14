@@ -116,7 +116,6 @@ void main_init_message_queue() {
 }
 
 void main_init_config() {
-
   pthread_condattr_t cond_attr;
   pthread_condattr_init(&cond_attr);
   printf("shared: %d\n", pthread_condattr_setpshared(&cond_attr, PTHREAD_PROCESS_SHARED));
@@ -138,8 +137,7 @@ void main_init_config() {
   pthread_mutex_lock(config_mutex);
   pthread_cond_wait(wait_for_config, config_mutex);
   pthread_mutex_unlock(config_mutex);
-  printf("Config Read\n");
-
+  utils_debug("Config Read\n");
 }
 
 void main_init_shared_memory() {
@@ -151,12 +149,11 @@ void main_init_shared_memory() {
 }
 
 void main_init() {
-
   main_init_message_queue();
   main_init_stats();
 
   main_init_shared_memory();
-  printf("Shared memory\n");
+  utils_debug("Shared memory\n");
   main_init_config();
 
   server_start();
@@ -190,29 +187,27 @@ void server_close() {
 }
 
 void main_reload_config() {
-
   printf("Reloading configuration\n");
   printf("%d\n", config_process);
   server_close();
   kill(config_process, SIGHUP);
 
-  printf("Sent SIGHUP\n");
+  utils_debug("Sent SIGHUP\n");
   
   // waits for configuration to be read
   pthread_mutex_lock(config_mutex);
   pthread_cond_wait(wait_for_config, config_mutex);
   pthread_mutex_unlock(config_mutex);
 
-  printf("configuration Reloaded\n");
+  utils_debug("configuration Reloaded\n");
   
   server_start();
 
-  printf("Restarted threads and memory\n");
-
+  utils_debug("Restarted threads and memory\n");
 }
 
 void main_run() {
-  printf("Running main\n");
+  utils_debug("Running main\n");
   signal(SIGINT, main_shutdown);
   signal(SIGTSTP, main_reload_config);
 
@@ -242,14 +237,13 @@ void main_run() {
         pthread_mutex_unlock(buffer_mutex);
         sem_post(sem_buffer_empty);
       }
-
-
     }
-
   }
 }
 
 int main(void) {
+  utils_debug("Started server.\n");
+  
   main_init();
 
   main_run();
