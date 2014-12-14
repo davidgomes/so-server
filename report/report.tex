@@ -21,15 +21,25 @@
 \begin{document}
 \maketitle
 
-Neste relatório descrevemos o funcionamento base do nosso
-servidor HTTP para Sistemas Operativos.
+Neste relatório descrevemos o funcionamento base do nosso servidor HTTP
+para a cadeira de Sistemas Operativos. A compilação e execução do projeto
+estão descritas no ficheiro \texttt{README.md} do \textit{source code} do
+mesmo.
 
 \section{Scheduler}
 Trabalha michel
 
+\section{Tratamento de \textit{requests}}
+Os \textit{requests} feitos ao servidor podem ser estáticos ou dinâmicos. Neste
+contexto, os pedidos dinâmicos referem-se a \textit{shell scripts} que executamos
+no servidor. Para executar os \textit{scripts}, recorremos à função
+\texttt{popen}, que cria um processo novo e comunica com este por um \textit{pipe}.
+Lemos do \textit{pipe} e o \textit{output} deste é depois devolvido ao utilizador
+em formato \texttt{HTML}.
+
 \section{Configuração}
-A nossa configuração é um ficheiro \texttt{.txt} da seguinte forma. A estrutura
-da nossa configuração é a seguinte:
+A nossa configuração é um ficheiro de texto que é depois lido numa estrutura
+do seguinte tipo:
 
 \vspace{2mm}
 \begin{lstlisting}[language=C]
@@ -42,6 +52,9 @@ da nossa configuração é a seguinte:
     char scripts[MAX_SCRIPTS][SCRIPT_NAME_STR];
   } typedef config_t;
 \end{lstlisting}
+
+Apenas permitimos a execução de \textit{scripts} da lista da configuração. Além disto,
+temos a configuração a ser relida do ficheiro ao receber um \texttt{SIGHUP}.
 
 \section{Logging e Estatísticas}
 Para o \textit{logger} do servidor, usamos filas de mensagens, tal como pedido
