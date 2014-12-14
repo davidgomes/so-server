@@ -33,6 +33,7 @@ void http_parse_request(int socket, http_request *request) {
   char *file_extension = utils_get_file_extension(request->name);
 
   char prefix_dir[SIZE_BUF];
+  prefix_dir[0] = 0;
   utils_get_prefix_directory(prefix_dir, request->name);
 
   if (strcmp(prefix_dir, SCRIPT_DIR) == 0) {
