@@ -27,7 +27,8 @@ estão descritas no ficheiro \texttt{README.md} do \textit{source code} do
 mesmo.
 
 \section{Scheduler}
-Por fazer.
+O nosso scheduler é uma thread responsável por aceder a um buffer, criado numa lista ligada, e retirar pedidos segundo uma política de escalonamento definida nas configurações. Caso a política seja FIFO, o primeiro pedido na lista ligada é o primeiro a ser distribuído. Caso se tenha um política de prioridade aos pedidos estáticos, o buffer é percorrido até que seja encontrado um pedido deste tipo, que é dado à thread worker. Caso seja usado politica de prioridade dinâmica, segue se o mesmo método, mas para encontrar um pedido deste tipo. Nestas políticas, caso não se encontre o tipo de pedido com prioridade, fornece-se o primeiro pedido do buffer. Após a selecção do trabalho a processar, vai se encontrar uma thread disponível para o fazer.\\
+Na distribuição dos pedidos pelas threads worker da pool, percorre-se um array, com uma posição para cada thread, que indica o estado de ocupação de cada. Se for 1, está disponível, se for 0 está ocupada. Naturalmente, cada thread worker acede a esse array sempre que acaba um trabalho, para se marcar como desocupada, e o scheduler marca-a como ocupada sempre que lhe dá serviço. No acesso a esse array, usa-se um pthread_mutex para cada posição, para garantir sincronização na leitura e escrita. A thread scheduler notifica a thread worker de que tem trabalho disponível através de uma variável de condição própria para essa thread. O trabalho em si é também colocado num array, em que cada posição tem o pedido para a thread respectiva da pool. A thread scheduler só acede a este array quando a thread worker não está em trabalho, naturalmente.\\
 
 \section{Tratamento de \textit{requests}}
 Os \textit{requests} feitos ao servidor podem ser estáticos ou dinâmicos. Neste
