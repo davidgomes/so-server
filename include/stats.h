@@ -26,6 +26,8 @@ int message_queue_id;
 
 sigset_t mask;
 
+char config_log_file_name[100];
+
 void stats_start(int _message_queue_id, char log_file_name[]);
 void stats_loop();
 void stats_close();

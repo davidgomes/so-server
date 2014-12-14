@@ -102,7 +102,7 @@ void main_init_stats() {
     fprintf(stderr, "Fork error creating stats process.\n");
   } else if (stats_process == 0) {
     stats_start(message_queue_id, "logs.txt");
-    exit(0);
+    //exit(0);
   } else { }
 }
 
@@ -221,7 +221,6 @@ void main_run() {
       request->message_queue_id = message_queue_id;
       http_parse_request(client_socket, request);
 
-      
       pthread_mutex_lock(buffer_mutex);
       printf("New Request with type %d, buffer size:%d\n", request->type, request_buffer->cur_size);
       if (request_buffer->cur_size == request_buffer->size) { //check if there is space in the buffer

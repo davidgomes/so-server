@@ -18,7 +18,7 @@ void config_read() {
   printf("Read Configuration\n");
 }
 
-void sighandler() {
+void config_sighup_handler() {
   printf("RECEIVED SIGHUP\n");
   config_read();
 }
@@ -34,7 +34,7 @@ void config_start(config_args_t *config_args) {
   
   config_read();
 
-  signal(SIGHUP, sighandler);
+  signal(SIGHUP, config_sighup_handler);
   signal(SIGINT, config_shutdown);
 
   sigemptyset(&mask);

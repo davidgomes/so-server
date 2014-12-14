@@ -28,7 +28,8 @@ void *client_code(void* cd) {
     strcpy(message->file_name, (*(data->request))->name);
 
     http_int_to_type(message->request_type, (*(data->request))->type);
-    
+
+    utils_debug("Sending new request to message queue.\n");
     msgsnd((*(data->request))->message_queue_id, message,
            sizeof(stats_message), 0);
 
