@@ -1,3 +1,7 @@
+report/*.pdf
+report/*.aux
+report/*.log
+report/*.synctex.gz
 .DS_Store
 build/
 .idea/
