@@ -16,6 +16,7 @@
 #include "http.h"
 #include "constants.h"
 #include "stats.h"
+#include "config.h"
 
 struct {
   int id;
@@ -25,9 +26,13 @@ struct {
   http_request **request;
   pthread_cond_t *wait_for_work;
   pthread_mutex_t *cond_lock;
+  config_t* config;
 } typedef client_data;
+
+config_t* config;
 
 void *client_code(void *which_client);
 void client_serve_request(http_request *request);
 
 #endif
+

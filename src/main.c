@@ -55,6 +55,7 @@ void main_init_clients() {
     workers[i].request = &requests[i];
     workers[i].wait_for_work = &(wait_for_work[i]);
     workers[i].cond_lock = &(cond_lock[i]);
+    workers[i].config = config;
   }
 }
 
@@ -247,7 +248,7 @@ void main_run() {
   }
 }
 
-int main(void) {
+int main() {
   utils_debug("Started server.\n");
 
   main_init();

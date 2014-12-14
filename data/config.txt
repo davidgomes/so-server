@@ -2,5 +2,5 @@
 3000
 STATIC_POLICY
 2
-cgi-bin/script.sh
-cgi-bin/script2.sh
+script.sh
+script2.sh
