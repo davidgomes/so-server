@@ -261,7 +261,8 @@ void main_run() {
 }
 
 int main() {
-  utils_debug("Started server.\n");
+  utils_debug("Started server: ");
+  printf("%d\n", getpid());
 
   main_init();
 
