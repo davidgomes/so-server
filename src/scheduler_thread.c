@@ -72,8 +72,6 @@ void* scheduler_code(void* data) {
 
     //sleep(5);
 
-    printf("hi\n");
-
     if (node->request->type == DYNAMIC_SCRIPT) {
       utils_debug("New dynamic script: ");
       printf("%s\n", node->request->name);
@@ -90,7 +88,6 @@ void* scheduler_code(void* data) {
       if (!script_allowed) {
         printf("%s\n", node->request->name);
         utils_debug("This script is not allowed.\n");
-
         // TODO Michel este script nao pode ser corrido, que se faz
       }
     }

@@ -1,0 +1,60 @@
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{geometry}
+
+\usepackage{parskip}
+\setlength{\parskip}{1.0\baselineskip plus2pt minus2pt}
+
+\addtolength{\topmargin}{-50pt}
+\addtolength{\textheight}{130pt}
+\addtolength{\textwidth}{95pt}
+\addtolength{\oddsidemargin}{-45pt}
+
+\title{Servidor HTTP - Sistemas Operativos}
+\author{David Gomes (2013136061), Miguel Duarte (2012139146)}
+\date{Dezembro 2014}
+
+\begin{document}
+\maketitle
+
+Neste relatório descrevemos o funcionamento base do nosso
+servidor HTTP para Sistemas Operativos.
+
+\section{Scheduler}
+Trabalha michel
+
+\section{Configuração}
+A nossa configuração é um ficheiro \texttt{.txt} da seguinte forma. A estrutura
+da nossa configuração é a seguinte:
+
+\vspace{2mm}
+\begin{lstlisting}[language=C]
+  struct {
+    int n_threads;
+    int port;
+    int policy_type;
+
+    int n_scripts;
+    char scripts[MAX_SCRIPTS][SCRIPT_NAME_STR];
+  } typedef config_t;
+\end{lstlisting}
+
+\section{Logging e Estatísticas}
+Para o \textit{logger} do servidor, usamos filas de mensagens, tal como pedido
+no enunciado. A estrutura que enviamos pela fila é a seguinte:
+
+\vspace{2mm}
+\begin{lstlisting}[language=C]
+  typedef struct {
+    long mtype;
+    int thread_index;
+    char request_type[24];
+    char file_name[SIZE_BUF];
+  } stats_message;
+\end{lstlisting}
+
+\end{document}
