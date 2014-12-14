@@ -12,6 +12,7 @@
 struct {
   int n_threads;
   int port;
+  int policy_type;
 } typedef config_t;
 
 struct {
@@ -28,6 +29,7 @@ sigset_t mask;
 void config_sighup_handler();
 void config_shutdown();
 void config_start(config_args_t *config_args);
+int config_sort_type_str_to_int(char config_type_str[]);
 void config_read();
 
 #endif

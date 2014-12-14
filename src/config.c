@@ -12,6 +12,10 @@ void config_read() {
   fscanf(config_file, "%d", &port);
   g_config->port = port;
 
+  char sort_type[SORT_TYPE_STR];
+  fscanf(config_file, "%s", sort_type);
+  g_config->policy_type = config_sort_type_str_to_int(sort_type);
+
   fclose(config_file);
 
   pthread_cond_broadcast(wait_for_config);
@@ -27,11 +31,24 @@ void config_shutdown() {
   exit(0);
 }
 
+int config_sort_type_str_to_int(char config_type_str[]) {
+  if (!strcmp(config_type_str, "FIFO_POLICY")) {
+    return FIFO_POLICY;
+  } else if (!strcmp(config_type_str, "STATIC_POLICY")) {
+    return STATIC_POLICY;
+  } else if (!strcmp(config_type_str, "DYNAMIC_POLICY")) {
+    return DYNAMIC_POLICY;
+  } else {
+    fprintf(stderr, "An error occured while reading the configuration.");
+    return -1;
+  }
+}
+
 void config_start(config_args_t *config_args) {
   g_config = &config_args->config;
   wait_for_config = &config_args->wait_for_config;
   config_mutex = &config_args->config_mutex;
-  
+
   config_read();
 
   signal(SIGHUP, config_sighup_handler);

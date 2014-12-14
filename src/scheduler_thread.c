@@ -20,7 +20,9 @@ void* scheduler_code(void* data) {
   sem_t *sem_buffer_full = param->sem_buffer_full;
   pthread_mutex_t *buffer_mutex = param->buffer_mutex;
 
-  printf("is static %d\n", param->policy == STATIC_POLICY);
+  char debug_str[100];
+  sprintf(debug_str, "config policy:  %d\n", param->policy);
+  utils_debug(debug_str);
 
   while (true) {
     sem_wait(sem_buffer_empty); // only remove if buffer is not empty
@@ -33,7 +35,6 @@ void* scheduler_code(void* data) {
     buffer_node* parent = buf->first;
     buffer_node* best = NULL;
     buffer_node* parentbest = NULL;
-
 
     if (param->policy == FIFO_POLICY) {
       best = node;
